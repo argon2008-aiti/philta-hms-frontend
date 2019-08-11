@@ -12,6 +12,7 @@
     "iview": "^3.4.2",
     "less": "^2.7.3",
     "less-loader": "^4.1.0",
+    "moment": "^2.24.0",
     "randomcolor": "^0.5.4",
     "vue": "^2.6.6",
     "vue-router": "^3.0.6",

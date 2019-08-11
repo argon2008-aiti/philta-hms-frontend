@@ -9,7 +9,7 @@
               </span>
           </Col>
           <Col span=8>
-            <Input size="large" placeholder="Search Patients"></Input>
+            <Input size="large" placeholder="Search Patients" :disabled="patientCount==0"></Input>
           </Col>
           <Col span=8>
              <Tooltip content="Sort By..." placement="right">
@@ -26,6 +26,7 @@
                         @on-change="handleSortRequest"
                         @on-clear="clearSortRequest"
                         style="width:100px" 
+                        :disabled="patientCount==0"
                         placeholder="None">
                     <Option  value="full_name" key="name">Full Name</Option>
                     <Option  value="id" key="id">Patient ID</Option>
@@ -44,7 +45,7 @@
           </Col>
         </Row>
       </div>
-        <Card dis-hover style="margin-top: 50px">
+        <Card dis-hover style="margin-top: 50px; min-height: 50vh;">
       <div class="page-contents">
           <Modal v-model="add_user_modal_active"
                 class="add-patient-modal"
@@ -68,9 +69,12 @@
                     </Button>
                 </div>
           </Modal>
-          <Table :columns="column_names" 
+          <NoDataView v-if="patientCount==0"
+                      style="text-align: center;">
+          </NoDataView>
+          <Table v-else :columns="column_names" 
                  :data="patientList"
-                 style="margin-top: 20px;"
+                 style="margin-top: 20px; padding-bottom: 20px"
                  stripe
                  :loading="table_loading"
                  @on-row-click="row_clicked"
@@ -86,6 +90,7 @@
                     <div @click="dropdownIconClicked">
                     <Dropdown trigger="click" 
                               placement='left-start' 
+                              :transfer="true"
                               @on-click="handleContextMenuClick($event, index)">
                           <Icon class="patient-table-more-icon" type="md-more" size='20'/>
                       <DropdownMenu slot="list">
@@ -115,7 +120,7 @@
           </Table>
         </div>
       </Card>
-      <Modal v-model="patient_overview"
+      <Modal v-if="patientCount>0" v-model="patient_overview"
              width="640"
              :closable="false"
              :footer-hide="true">
@@ -168,13 +173,15 @@
 
 <script>
 import AddPatientForm from '@/components/AddPatientForm';
+import NoDataView from '@/components/NoDataView';
 import randomcolor from 'randomcolor';
 import sortByKey from "../utils/sorter";
 import { setTimeout } from 'timers';
 
 export default {
       components: {
-      AddPatientForm
+      AddPatientForm,
+      NoDataView
     },
 
     data() {
@@ -279,7 +286,7 @@ export default {
       }, 
 
       handleSortRequest: function(value) {
-        if(value)this.sort_key = value;
+        if(value) this.sort_key = value;
         console.log(value);
       },
 

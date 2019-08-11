@@ -15,10 +15,24 @@ Vue.config.productionTip = false
 Vue.component('no-sidebar-layout', NoSideBar);
 Vue.component('default-layout', Default);
 
-Vue.use(iView, {locale});
+Vue.use(iView, { locale });
+
+import moment from 'moment'
+
+Vue.filter('formatDate', function(value) {
+    if (value) {
+        return moment(String(value)).format('Do MMMM, YYYY');
+    }
+});
+
+Vue.filter('getAge', function(value) {
+    if (value) {
+        return moment().diff(String(value), 'years') + " Years";
+    }
+});
 
 new Vue({
-  router,
-  store,
-  render: h => h(App)
+    router,
+    store,
+    render: h => h(App)
 }).$mount('#app')
