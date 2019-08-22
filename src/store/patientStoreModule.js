@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /** VUEX module for patients management in hospital management app **/
 import $axios from "../utils/http";
 import sortByKey from "../utils/sorter";
@@ -30,7 +29,7 @@ export default {
         },
 
         getPatientByID: (state) => (id) => {
-            //console.log(id);
+            //
             let patient = state.patients.find(pat => pat.id === id);
             //console.log("This is the patient " + patient);
             return patient
@@ -74,7 +73,7 @@ export default {
             // stuf to retrieve all the logged in user's todos from backend
             try {
                 let { data } = await $axios.get(context.state.api_endpoint);
-                //console.log("This is the data: " + data);
+                console.log(data);
                 data.map(patient => {
                         return patient.avatarColor = randomcolor({ luminosity: 'dark' });
                     })

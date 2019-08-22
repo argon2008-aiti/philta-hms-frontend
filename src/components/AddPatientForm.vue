@@ -170,7 +170,7 @@ export default {
         saveNewPatient() {
             // save patient by calling action in store
             let store_address = 'patient/create';
-            if(this.patient>=0 && this.addPatientForm.id) {
+            if(this.patient !== -1 && this.addPatientForm.id) {
                 store_address = 'patient/update'
             }
             this.$store.dispatch(store_address, {
@@ -186,6 +186,22 @@ export default {
     },
 
     mounted() {
+        if(this.patient !== -1 ) {
+            let patient_to_edit = this.$store
+                    .getters['patient/getPatientByID'](this.patient);
+            if(patient_to_edit !== undefined){
+                this.addPatientForm = JSON.parse(JSON.stringify(patient_to_edit));
+            }
+            if(patient_to_edit===undefined) {
+                console.log("retrieving from server");
+                this.$store.dispatch('patient/read', this.patient).then((result) => {
+                    console.log(result);
+                     this.addPatientForm = JSON.parse(JSON.stringify(result));
+                }).catch((err) => {
+
+                });
+            }
+        }
         // register for newPatientSaveRequest from parent Component
         this.$root.$on("newPatientSaveRequest", () => {
             this.$refs["addPatientForm"].validate(valid => {
@@ -210,9 +226,9 @@ export default {
         patient: function(newValue, oldValue) {
             console.log("patient has changed " + newValue);
             this.clearFormFields();
-            if(newValue >= 0 ) {
+            if(newValue !== -1 ) {
                let patient_to_edit = this.$store
-                        .getters['patient/getPatientByIndex'](newValue);
+                        .getters['patient/getPatientByID'](newValue);
                 this.addPatientForm = JSON.parse(JSON.stringify(patient_to_edit));
             }
             else {

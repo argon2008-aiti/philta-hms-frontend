@@ -9,7 +9,21 @@
               </span>
           </Col>
           <Col span=8>
-            <Input size="large" placeholder="Search Patients" :disabled="patientCount==0"></Input>
+            <AutoComplete 
+                  size="large" 
+                  :v-model="current_search"
+                  placeholder="Search Patients [Name or ID]" 
+                  :disabled="patientCount==0"
+                  @on-search="searchPatient"
+                  @on-select="patientSelected"
+                  :clearable="true"
+                  icon="ios-search">
+
+                  <Option v-for="option in patientOptions" :value="option.id" :key="option.full_name">
+                      <Avatar :style="avatarStyle(option.avatarColor)">{{option.first_name[0]}}</Avatar>
+                      <span>{{option.full_name}}</span>
+                  </Option>
+                  </AutoComplete>
           </Col>
           <Col span=8>
              <Tooltip content="Sort By..." placement="right">
@@ -186,6 +200,7 @@ export default {
 
     data() {
       return {
+        current_search: '',
         modal_title: "New Patient Form",
         add_user_modal_active: false,
         patient_overview: false,
@@ -193,6 +208,7 @@ export default {
         table_loading: false,
         patient_to_edit: -1,
         current_index: 0,   // begin with this so that we don't have null pointer errors
+        patientOptions: [],
         /*current_patient: {
                 row_index: '',
                 avatarColor: '',
@@ -217,6 +233,13 @@ export default {
             title: 'Name',
             slot: 'full_name',
             minWidth: 120,
+            ellipsis: true,
+            sortable: true
+          },
+
+          {
+            title: 'Patient ID',
+            key: 'patient_id',
             ellipsis: true
           },
 
@@ -306,7 +329,7 @@ export default {
       editPatient: function(index) {
           console.log(index);
           this.modal_title="Edit Patient Form";
-          this.patient_to_edit = index;
+          this.patient_to_edit = this.$store.getters['patient/getPatientByIndex'](index).id;
           this.add_user_modal_active = true;
       },
 
@@ -357,6 +380,17 @@ export default {
       closeModal: function() {
         console.log("closing modal");
         this.patient_overview = false;
+      },
+
+      searchPatient: function(query) {
+        console.log(query);
+        this.patientOptions =  this.patientList.filter(patient => {
+          return patient.full_name.toUpperCase().indexOf(query.toUpperCase()) !== -1;
+        });
+      },
+
+      patientSelected: function(value, patient) {
+        this.$router.push('/patients/details/' + value);
       }
 
     },
@@ -382,7 +416,6 @@ export default {
 
     mounted() {
       this.fetchPatients();
-      console.log(this.$store.getters['patient/all'](this.sort_key));
       this.$root.$on("newPatientSaveSuccess", (data) => {
         this.add_user_modal_active = false;
         this.patient_to_edit = -1;

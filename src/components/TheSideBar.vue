@@ -82,6 +82,7 @@ export default {
     .ivu-menu-item-active:not(.ivu-menu-submenu)
     {
         background: #c7edce;
+        font-weight: bold;
     }
     a {
         color: #4a4a4a;
