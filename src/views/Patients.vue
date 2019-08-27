@@ -59,7 +59,7 @@
           </Col>
         </Row>
       </div>
-        <Card dis-hover style="margin-top: 50px; min-height: 50vh;">
+        <Card dis-hover style="margin-top: 50px; min-height: 80vh;">
       <div class="page-contents">
           <Modal v-model="add_user_modal_active"
                 class="add-patient-modal"
@@ -84,7 +84,9 @@
                 </div>
           </Modal>
           <NoDataView v-if="patientCount==0"
-                      style="text-align: center;">
+                      style="text-align: center; 
+                             vertical-align: middle;
+                             margin-top: 60px">
           </NoDataView>
           <Table v-else :columns="column_names" 
                  :data="patientList"
@@ -140,7 +142,9 @@
              :footer-hide="true">
         <div slot="header" class="patient-info-header">
             <Avatar size="large" :style="avatarStyle(currentPatient.avatarColor, '20px')">{{currentPatient.first_name[0]}}</Avatar>
-            <span style="font-size: 20px; height: 40px; vertical-align: middle">{{currentPatient.full_name}}</span>
+            <span style="font-size: 20px; height: 40px; vertical-align: middle">
+                  {{currentPatient.full_name}} [ {{currentPatient.patient_id}} ]
+            </span>
             <span id="patient-info-header-button-container">
               <Tooltip content="Patient Details" placement="top">
                 <div @click="showPatientDetails(current_index)">
@@ -238,7 +242,7 @@ export default {
           },
 
           {
-            title: 'Patient ID',
+            title: 'OPD ID',
             key: 'patient_id',
             ellipsis: true
           },

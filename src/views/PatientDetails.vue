@@ -2,17 +2,20 @@
 <div class="page-container">
     <div class="page-header">
         <span class="header-title">Patient Details</span>
-        <div style="position: absolute; right: 120px; font-size: 16px; display: inline;">
+        <div style="position: absolute; right: 20px; font-size: 16px; display: inline;">
             <Icon type="ios-person-outline" size="32" style="margin-bottom: 5px;"></Icon>
             {{currentPatient.full_name}}
         </div>
+        <!--
         <span>
             <Button type="error" 
                     size="large"
-                    style="float: right">
+                    style="float: right"
+                    @click="deletePatient">
                     Delete
             </Button>
         </span>
+        -->
     </div>
     <div style="margin-top: 60px">
         <p class="section-header-text">BIO DATA</p>
@@ -63,6 +66,7 @@
             </div>
         </Card>
     </div>
+    <!--
     <div style="margin-top: 30px">
     <p class="section-header-text">PREVIOUS VISITS</p>
         <Card dis-hover class="section-card">
@@ -75,8 +79,8 @@
             </div>
         </Card>
     </div>
+    -->
 
-    <!--
     <div style="margin-top: 30px">
     <p class="section-header-text">INSURANCE POLICY</p>
         <Card dis-hover class="section-card">
@@ -89,6 +93,8 @@
             </div>
         </Card>
     </div>
+
+    <!--
     <div style="margin-top: 30px">
     <p class="section-header-text">BILLS AND PAYMENTS</p>
         <Card dis-hover class="section-card">
@@ -157,7 +163,31 @@ import AddPatientForm from '@/components/AddPatientForm';
                 }).catch((err) => {
                 console.log(error);
                 });
-            }
+            },
+
+
+            deletePatient: function() {
+                var patientID = this.currentPatient.id;
+                var patientIndex = this.$store.getters['patient/getPatientIndex'](patientID);
+                this.$Modal.confirm({
+                        title: this.currentPatient.full_name,
+                        content: '<p>Are you sure you want to delete this patient?</p>',
+                        loading: true,
+                        okText: "Yes",
+                        cancelText: "No",
+                        onOk: () => {
+                            this.patient_overview = false;
+                            this.$store.dispatch('patient/delete', patientIndex)
+                                    .then((deletedPatient) => {
+                                        this.$Message.info("Patient deleted successfully");
+                                        this.$Modal.remove();
+                                    }).catch((error) => {
+                                        console.log(error);
+                                        this.$Message.error("Unable to delete Patient");
+                                    })
+                        }
+                    });
+            },
         },
 
         computed: {
@@ -231,18 +261,6 @@ import AddPatientForm from '@/components/AddPatientForm';
       padding: 10px;
     }
 
-    .section-header-text {
-        color: #9F9F9F;
-        font-size: 11px;
-        letter-spacing: 2px;
-        /*font-weight: bold;*/
-    }
-
-    .section-card {
-        margin-left: 10px;
-        margin-top: 5px;
-    }
-
     .patient-info-inline {
       margin-left: 10px;
       font-size: 14px;
@@ -257,6 +275,20 @@ import AddPatientForm from '@/components/AddPatientForm';
         margin-left: 10px;
     }
 
+
+    .insurance-policy-container {
+        text-align: center;
+        padding: 20px;
+    }
+
+    .no-insurance-text {
+        margin-bottom: 20px;
+        color: #a8a8a8;
+        font-size: 14px;
+    }
+</style>
+
+<style>
     .badge-span {
         margin-left: 10px;
         font-family: 'Helvetica Neue';
@@ -272,16 +304,5 @@ import AddPatientForm from '@/components/AddPatientForm';
         white-space: nowrap;
         vertical-align: center;
         position: relative;
-    }
-
-    .insurance-policy-container {
-        text-align: center;
-        padding: 20px;
-    }
-
-    .no-insurance-text {
-        margin-bottom: 20px;
-        color: #a8a8a8;
-        font-size: 14px;
     }
 </style>

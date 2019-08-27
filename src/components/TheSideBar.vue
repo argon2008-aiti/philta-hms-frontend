@@ -36,6 +36,29 @@
                      INSURANCE
                 </MenuItem>
             </router-link>
+            
+            <div class="section-divider">
+
+            </div>
+            <div class="user-account-container">
+                <div class="profile-image-container">
+                    <Icon type="ios-person-outline" size=72 color="#ddd"></Icon>
+                </div>
+                <p class="account-name">{{currentUser.full_name}}</p>
+                <p class="badge-span account-role" style="margin-top: 5px;">{{currentUser.role}}</p>
+                <div class="account-button-group">
+                    <Button @click="">
+                        <Icon type="ios-cog-outline" size=20
+                              style="margin-bottom: 3px"></Icon>
+                        Profile
+                    </Button>
+                    <Button type="primary" @click="logOut" style="margin-left: 10px;">
+                        <Icon type="ios-exit-outline" size=20
+                              style="margin-bottom: 3px"></Icon>
+                        Log Out
+                    </Button>
+                </div>
+            </div>
         </Menu>
     </div>
 </template>
@@ -50,6 +73,29 @@ export default {
 
     created: function() {
         this.active_item = this.$router.currentRoute.name;
+    },
+    
+    computed: {
+        currentUser() {
+            return this.$store.getters['user/currentUser'];
+        }
+    },
+
+    methods: {
+        logOut() {
+          this.$Modal.confirm({
+                  title: "Session About To End",
+                  content: '<p>Are you sure you want to log out?</p>',
+                  okText: "Yes",
+                  cancelText: "No",
+                  onOk: () => {
+                    localStorage.removeItem("token");
+                    this.$router.push({ name: 'login'});
+                    window.location.reload();
+                  }
+              });
+        }
+
     },
 
     watch: {
@@ -86,5 +132,44 @@ export default {
     }
     a {
         color: #4a4a4a;
+    }
+
+    .section-divider {
+        height: 1px;
+        background: #dcdee2;
+        margin: 24px 20px;
+        clear: both;
+    }
+
+    .user-account-container {
+        height: 240px;
+        text-align: center;
+    }
+
+    .profile-image-container {
+        height: 80px;
+        width: 80px;
+        border-radius: 40px;
+        margin: 24px auto;
+        margin-bottom: 10px;
+        clear: both;
+        border: #dcdee2 1px solid;
+    }
+
+    .account-name {
+        color: #555;
+        font-size: 16px;
+    }
+    .account-role {
+        color: #555;
+        font-size: 12px;
+        display: inline-block;
+        padding-left: 8px;
+        padding-right: 8px;
+        padding-bottom: 5px;
+    }
+
+    .account-button-group {
+        margin-top: 20px;
     }
 </style>

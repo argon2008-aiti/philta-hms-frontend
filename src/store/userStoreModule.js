@@ -1,20 +1,32 @@
 /** VUEX module for patients management in hospital management app **/
 import $axios from "../utils/http";
-import sortByKey from "../utils/sorter";
 import Vue from "vue";
-import randomcolor from 'randomcolor';
 
 export default {
     namespaced: true,
     // -----------------------------------------------------------------
     state: {
-        api_endpoint: 'patient',
-        patients: [],
-        asyncSavingPatient: false,
+        api_endpoint: 'auth',
+        currentUser: {},
+        isLoggedIn: false,
+        isLoggingIn: false
     },
     // -----------------------------------------------------------------
     getters: {
+
+        currentUser: state => {
+            return state.currentUser;
+        },
+
+        isLoggedIn: state => {
+            return state.isLoggedIn;
+        },
+
+        isLoggingIn: state => {
+            return state.isLoggingIn;
+        },
         // getters and computed props on the todos data
+        /*
         patientCount: state => {
             return state.patients.length;
         },
@@ -28,10 +40,6 @@ export default {
             return state.patients[index];
         },
 
-        getPatientIndex: (state) => (id) => {
-            return state.patients.findIndex(pat => pat.id === id);
-        },
-
         getPatientByID: (state) => (id) => {
             //
             let patient = state.patients.find(pat => pat.id === id);
@@ -41,12 +49,24 @@ export default {
 
         asyncSavingPatient: state => {
             return state.asyncSavingPatient;
-        },
+        }, */
 
     },
     // -----------------------------------------------------------------
     mutations: {
         // stuff to set todos data locally
+        setCurrentUser: (state, user) => {
+            Vue.set(state, 'currentUser', user);
+        },
+
+        setIsLoggingIn: (state, isLoggingIn) => {
+            state.isLoggingIn = isLoggingIn;
+        },
+
+        setIsLoggedIn: (state, isLoggedIn) => {
+            state.isLoggedIn = isLoggedIn;
+        },
+        /*
         setPatientList: (state, patients) => {
             Vue.set(state, 'patients', patients);
         },
@@ -65,59 +85,46 @@ export default {
             state.patients.splice(index, 1);
         },
 
-        deletePatientByID: (state, id) => {
-            let index = state.patients.findIndex(pat => pat.id === id);
-            state.patients.splice(index, 1);
-        },
-
         setAsyncSavingPatient: (state, saving) => {
             state.asyncSavingPatient = saving;
-        }
+        }  */
     },
     // -----------------------------------------------------------------
     actions: {
-        fetch: async(context, payload) => {
-            // don't fetch if we already have patients. 
-            if (context.getters.patientCount != 0) return;
-            // stuf to retrieve all the logged in user's todos from backend
-            try {
-                let { data } = await $axios.get(context.state.api_endpoint);
-                data.map(patient => {
-                        return patient.avatarColor = randomcolor({ luminosity: 'dark' });
-                    })
-                    //console.log("This is second data " + data);
-                context.commit('setPatientList', data);
 
-            } catch (error) {
-                if (error.response) {
-                    switch (error.response.status) {
-                        // not logged in or token expired
-                        case 401:
-                            payload.router.push({ name: 'login', params: { show_alert: true } });
-                            break;
-
-                        default:
-                            break;
-                    }
-                }
-            }
-        },
+        logIn: (context, payload) => new Promise(async function(resolve, reject) {
+            $axios.post(context.state.api_endpoint + '/login', payload.data)
+                .then((response) => {
+                    console.log(response.data);
+                    localStorage.token = response.data.token;
+                    $axios.defaults.headers.common["Authorization"] =
+                        "Bearer " + localStorage.token;
+                    context.commit('setCurrentUser', response.data.user);
+                    resolve(response);
+                })
+                .catch((error) => {
+                    reject(error);
+                    context.commit('setIsLoggingIn', false);
+                });
+        }),
+        /*
         create: (context, payload) => new Promise(async function(resolve, reject) {
-            context.commit('setAsyncSavingPatient', true);
+            //context.commit('setAsyncSavingPatient', true);
+            console.log(payload.providerData);
             try {
-                let { data } = await $axios.post(context.state.api_endpoint, payload.patientData);
-                context.commit('addPatientToList', data);
+                let { data } = await $axios.post(context.state.api_endpoint, payload.providerData);
+                console.log(data);
+                //context.commit('addPatientToList', data);
                 resolve(data);
             } catch (error) {
                 reject(error);
             }
-            context.commit('setAsyncSavingPatient', false);
+            //context.commit('setAsyncSavingPatient', false);
         }),
 
         read: (context, id) => new Promise(async function(resolve, reject) {
             // stuff to retrieve a particular todo data from the backend : CRUD READ ACTION
             let patient = context.getters.getPatientByID(id);
-            console.log(patient);
             if (!patient) {
                 try {
                     let { data } = await $axios.get(context.state.api_endpoint, { params: { id: id } });
@@ -145,7 +152,6 @@ export default {
 
         }),
         delete: (context, index) => new Promise(async function(resolve, reject) {
-            console.log(index)
             let patient = context.getters.getPatientByIndex(index);
             try {
                 let { data } = await $axios.delete(context.state.api_endpoint, { params: { id: patient.id } });
@@ -154,6 +160,6 @@ export default {
             } catch (error) {
                 reject(error);
             }
-        }),
+        }) */
     }
 }

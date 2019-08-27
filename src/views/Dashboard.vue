@@ -5,7 +5,6 @@
     </div>
     <Card dis-hover style="margin-top: 50px; min-height: 80vh;">
       <div class="page-contents">
-          <h2>dashboard contents</h2>
       </div>
     </Card>
   </div>

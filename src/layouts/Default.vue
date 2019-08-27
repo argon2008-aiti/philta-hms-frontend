@@ -78,4 +78,16 @@ export default {
            -mox-box-shadow: 0px 4px 4px -4px #dcdedc;
         box-shadow: 0px 4px 4px -3px #dcdedc;
     }
+    
+    .section-header-text {
+        color: #9F9F9F;
+        font-size: 11px;
+        letter-spacing: 2px;
+        /*font-weight: bold;*/
+    }
+
+    .section-card {
+        margin-left: 10px;
+        margin-top: 5px;
+    }
 </style>

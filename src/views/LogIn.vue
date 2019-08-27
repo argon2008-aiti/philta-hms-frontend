@@ -69,33 +69,33 @@ import $axios from "../utils/http";
                 }
             }
         },
+
+        computed: {
+            isLoggingIn() {
+                this.$store.getters['user/isLoggingIn'];
+            }
+
+        },
+
         methods: {
             handleSubmit(name) {
                 this.$refs[name].validate((valid) => {
+                    this.loading = true;
                     if (valid) {
-                        this.loading = true;
-                        console.log(localStorage.token);
-                        const uri = "http://localhost:3000/auth/login"
-                        $axios.post(uri, this.form)
-                        .then((response) => {
-                            localStorage.token = response.data.token;
-                            $axios.defaults.headers.common["Authorization"] = 
-                                "Bearer " + localStorage.token;
-                            this.loading = false;
-                            this.$Message.success('Sign In successful');
-                            this.$router.push('/');
-                        })
-                        .catch((error) => {
-                            console.log(error.response);
-                            if(error.response) {
-                                    this.$Message.error(error.response.data);
-                            }
+                        this.$store.dispatch('user/logIn', {
+                                            router: this.$router,
+                                            data: this.form
+                                            }).then((response) => {
+                                                this.$Message.success('Sign In successful');
+                                                this.$router.push('/');
+                                            }).catch((error) => {
 
-                            else {
-                                this.$Message.error('Unable to connect to server!');
-                            }
-                            this.loading = false;
-                        });
+                                                if (error.response) {
+                                                    this.$Message.error(error.response.data);
+                                                } else {
+                                                    this.$Message.error('Unable to connect to server!');
+                                                }
+                                            });
                     } else {
                         this.$Message.error('The information you provided is incomplete!');
                     }
