@@ -2,30 +2,34 @@
   <div class="page-container" ref="container">
     <div class="page-header">
         <span class="header-title">Health Insurance</span>
+        <Button type="primary" @click="addInsuranceProvider" style="float: right;" size="large">
+          Add Provider
+        </Button>
     </div>
-
-    <div style="margin-top: 60px">
-    <p class="section-header-text">PROVIDERS</p>
-        <Card dis-hover class="section-card">
+    <div style="margin-top: 60px" v-if="providerCount==0">
+        <Card dis-hover class="section-card" style="min-height: 80vh">
             <div class="page-contents">
-              <div v-if="providerCount==0" class="insurance-providers-container-no-data">
+              <div class="insurance-providers-container-no-data">
                   <img src="../assets/no_insurance.png" alt="no insurance" srcset="" width="100px" height="100px">
-                  <p class="no-provider-text">There are no providers in the database!</p>
+                  <p class="no-provider-text">There are no insurance providers to show!</p>
                   <Button type="primary" @click="addInsuranceProvider">
                     Add Insurance Provider
                   </Button>
               </div>
-              <div v-else class="insurance-providers-container">
-                  <Button type="primary" @click="addInsuranceProvider" style="margin-bottom: 20px;">
-                    Add Provider
-                  </Button>
+            </div>
+        </Card>
+    </div>
+  <div v-else>
+    <div style="margin-top: 60px">
+    <p class="section-header-text">PROVIDERS</p>
+        <Card dis-hover class="section-card">
+            <div class="page-contents">
                   <div class="flex-container">
                     <div v-for="provider in providerList" class="provider-enclosure" :key="provider.id">
-                        <Icon type="ios-podium-outline" size="96" color="#ddd"/>
-                        <p class="provider-name">{{provider.company_name}}</p>
+                      <img :src="createImageUrl(provider.logo_url)" alt="" srcset=""
+                            width="200px" class="insurance-logo">
                     </div>
                   </div>
-              </div>
             </div>
         </Card>
     </div>
@@ -33,9 +37,9 @@
     <p class="section-header-text">CLAIMS</p>
         <Card dis-hover class="section-card">
             <div class="page-contents">
-                 <h2>Health Insurance contents</h2>
             </div>
         </Card>
+    </div>
     </div>
   </div>
 </template>
@@ -48,7 +52,7 @@ export default {
 
   data() {
     return {
-
+       isColored: false,
     }
   },
   
@@ -63,7 +67,7 @@ export default {
 
   methods: {
     fetchProviders() {
-       this.$store.dispatch('provider/fetch', {
+       return this.$store.dispatch('provider/fetch', {
                                router: this.$router
                              });
     },
@@ -75,11 +79,44 @@ export default {
         })
         instance.$mount() // pass nothing
         this.$refs.container.appendChild(instance.$el)
+    },
+
+    createImageUrl(url) {
+        return "http://localhost:3000/upload/" + url;
     }
   },
 
   mounted() {
-    this.fetchProviders();
+    this.fetchProviders()
+       .then((result) => {
+          console.log(result);
+       }).catch((err) => {
+          console.log(err);
+          if (err.response) {
+              switch (err.response.status) {
+                  // not logged in or token expired
+                  case 401:
+                      this.$router.push({ name: 'login', params: { show_alert: true } });
+                      break;
+
+                  default:
+                      break;
+              }
+          } 
+          
+          else {
+              console.log("Unable to reach server");
+              this.$Message.error({
+                top: 50,
+                duration: 5,
+                render: h => {
+                  return h('div', [
+                        h('p', "Unable to reach server!")
+                    ]);
+                }
+              })
+          }
+       });;
     this.$root.$on("newProviderSaveSuccess", (data) => {
       this.$Message.success({
         top: 50,
@@ -101,6 +138,7 @@ export default {
     .insurance-providers-container-no-data {
         text-align: center;
         padding: 20px;
+        margin-top: 15vh;
     }
 
     .insurance-providers-container {
@@ -108,23 +146,35 @@ export default {
     }
 
     .no-provider-text {
-        margin-bottom: 20px;
+        margin-bottom: 30px;
         color: #a8a8a8;
-        font-size: 14px;
+        font-size: 16px;
     }
 
     .flex-container {
       display: flex;
       flex-wrap: wrap;
-      justify-content: space-evenly;
+      align-content: space-between;
+      justify-content: space-between;
     }
 
     .provider-enclosure {
       /*width: 100px;
       height: 100px;*/
+      margin-bottom: 50px;
     }
 
     .provider-name {
       text-align: center;
+    }
+    
+    .insurance-logo {
+      height: auto;
+      filter: grayscale(1);
+      cursor: pointer;
+    }
+
+    .insurance-logo:hover {
+      filter: none;
     }
 </style>

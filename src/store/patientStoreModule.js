@@ -76,9 +76,11 @@ export default {
     },
     // -----------------------------------------------------------------
     actions: {
-        fetch: async(context, payload) => {
+        fetch: (context) => new Promise(async function(resolve, reject) {
             // don't fetch if we already have patients. 
-            if (context.getters.patientCount != 0) return;
+            if (context.getters.patientCount != 0) {
+                resolve(context.getters.all);
+            }
             // stuf to retrieve all the logged in user's todos from backend
             try {
                 let { data } = await $axios.get(context.state.api_endpoint);
@@ -87,25 +89,18 @@ export default {
                     })
                     //console.log("This is second data " + data);
                 context.commit('setPatientList', data);
+                resolve(data);
 
             } catch (error) {
-                if (error.response) {
-                    switch (error.response.status) {
-                        // not logged in or token expired
-                        case 401:
-                            payload.router.push({ name: 'login', params: { show_alert: true } });
-                            break;
-
-                        default:
-                            break;
-                    }
-                }
+                reject(error);
             }
-        },
+        }),
+
         create: (context, payload) => new Promise(async function(resolve, reject) {
             context.commit('setAsyncSavingPatient', true);
             try {
                 let { data } = await $axios.post(context.state.api_endpoint, payload.patientData);
+                data.avatarColor = randomcolor({ luminosity: 'dark' });
                 context.commit('addPatientToList', data);
                 resolve(data);
             } catch (error) {
@@ -117,7 +112,6 @@ export default {
         read: (context, id) => new Promise(async function(resolve, reject) {
             // stuff to retrieve a particular todo data from the backend : CRUD READ ACTION
             let patient = context.getters.getPatientByID(id);
-            console.log(patient);
             if (!patient) {
                 try {
                     let { data } = await $axios.get(context.state.api_endpoint, { params: { id: id } });
@@ -145,7 +139,6 @@ export default {
 
         }),
         delete: (context, index) => new Promise(async function(resolve, reject) {
-            console.log(index)
             let patient = context.getters.getPatientByIndex(index);
             try {
                 let { data } = await $axios.delete(context.state.api_endpoint, { params: { id: patient.id } });

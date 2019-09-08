@@ -1,14 +1,12 @@
 import axios from 'axios';
 
-const API_BASE_URL = "http://192.168.1.107:85";
+const API_BASE_URL = "http://localhost:3000";
 
 const $axios = axios.create({
     baseURL: API_BASE_URL,
 });
 
 $axios.defaults.headers.common["Authorization"] =
-    "Bearer " + localStorage.token;
-
-console.log("token: " + localStorage.token);
+    "Bearer " + localStorage.getItem('token');
 
 export default $axios;

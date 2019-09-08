@@ -15,7 +15,14 @@ export default {
     getters: {
 
         currentUser: state => {
-            return state.currentUser;
+            let user = state.currentUser;
+            console.log(user.id)
+            if (user.id === undefined) {
+                console.log('getting user from local storage...');
+                user = JSON.parse(localStorage.getItem('currentUser'));
+            }
+            console.log(user.id);
+            return user;
         },
 
         isLoggedIn: state => {
@@ -57,6 +64,7 @@ export default {
         // stuff to set todos data locally
         setCurrentUser: (state, user) => {
             Vue.set(state, 'currentUser', user);
+            localStorage.setItem('currentUser', JSON.stringify(user));
         },
 
         setIsLoggingIn: (state, isLoggingIn) => {
@@ -106,6 +114,21 @@ export default {
                     reject(error);
                     context.commit('setIsLoggingIn', false);
                 });
+        }),
+
+        read: (context, token) => new Promise(async function(resolve, reject) {
+            // stuff to retrieve a particular todo data from the backend : CRUD READ ACTION
+            let patient = context.getters.getPatientByID(id);
+            if (!patient) {
+                try {
+                    let { data } = await $axios.get(context.state.api_endpoint, { params: { id: id } });
+                    resolve(data);
+                } catch (error) {
+                    reject(error);
+                }
+            } else {
+                resolve(patient);
+            }
         }),
         /*
         create: (context, payload) => new Promise(async function(resolve, reject) {

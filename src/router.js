@@ -10,18 +10,34 @@ import LogIn from './views/LogIn'
 
 Vue.use(Router)
 
-export default new Router({
+let router = new Router({
     routes: [{
             path: '/',
             name: 'dashboard',
-            meta: { display_name: 'Dashboard' },
+            meta: {
+                display_name: 'Dashboard',
+                requiresAuth: true
+            },
+            component: Dashboard
+        },
+
+        {
+            path: '/dashboard',
+            name: 'dashboard',
+            meta: {
+                display_name: 'Dashboard',
+                requiresAuth: true
+            },
             component: Dashboard
         },
 
         {
             path: '/patients',
             name: 'patients',
-            meta: { display_name: 'Patients' },
+            meta: {
+                display_name: 'Patients',
+                requiresAuth: true
+            },
             component: Patients
         },
 
@@ -35,28 +51,40 @@ export default new Router({
         {
             path: '/consultations',
             name: 'consultations',
-            meta: { display_name: 'Consultations' },
+            meta: {
+                display_name: 'Consultations',
+                requiresAuth: true
+            },
             component: Consultations
         },
 
         {
             path: '/health_insurance',
             name: 'insurance',
-            meta: { display_name: 'Health Insurance' },
+            meta: {
+                display_name: 'Health Insurance',
+                requiresAuth: true
+            },
             component: HealthInsurance
         },
 
         {
             path: '/bills',
             name: 'billings',
-            meta: { display_name: 'Billings' },
+            meta: {
+                display_name: 'Billings',
+                requiresAuth: true
+            },
             component: Bills
         },
 
         {
             path: '/login',
             name: 'login',
-            meta: { layout: 'no-sidebar' },
+            meta: {
+                layout: 'no-sidebar',
+                guest: true
+            },
             component: LogIn,
             props: true
         },
@@ -71,4 +99,36 @@ export default new Router({
                 import ( /* webpackChunkName: "about" */ './views/About.vue')
         }
     ]
-})
+});
+
+router.beforeEach((to, from, next) => {
+    if (to.matched.some(record => record.meta.requiresAuth)) {
+        if (localStorage.getItem('token') == null) {
+            next({
+                path: '/login',
+                params: { nextUrl: to.fullPath }
+            })
+        } else {
+            let user = JSON.parse(localStorage.getItem('currentUser'))
+            if (to.matched.some(record => record.meta.is_admin)) {
+                if (user.role == 'admin') {
+                    next()
+                } else {
+                    next({ name: 'dashboard' })
+                }
+            } else {
+                next()
+            }
+        }
+    } else if (to.matched.some(record => record.meta.guest)) {
+        if (localStorage.getItem('token') == null) {
+            next()
+        } else {
+            next({ name: 'dashboard' })
+        }
+    } else {
+        next()
+    }
+});
+
+export default router;

@@ -7,18 +7,18 @@
                 <Form ref="providerForm" label-position="top" :rules="formValidationRules" :model="ProviderForm">
                     <FormItem label="Company Name:" prop="company_name">
                         <Input v-model="ProviderForm.company_name"
-                            placeholder="name of insurance company"
+                            placeholder="name of insurance company" type="text"
                             suffix="ios-podium-outline">
                         </Input>
                     </FormItem>
                     <FormItem label="Phone Number:" prop="phone_number">
-                        <Input v-model="ProviderForm.phone_number" 
+                        <Input v-model="ProviderForm.phone_number" type="number"
                             placeholder="phone number is required"
                             suffix="ios-call-outline">
                         </Input>
                     </FormItem>
                     <FormItem label="Email:" prop="email">
-                        <Input v-model="ProviderForm.email" 
+                        <Input v-model="ProviderForm.email" type="email"
                             placeholder="optional"
                             suffix="ios-mail-outline">
                         </Input>
@@ -38,11 +38,12 @@
                         </FormItem>
                         </Col>
                         <Col span="8">
-                            <FormItem label="Provider Logo:" class="float-right">
-                                <div class="avatar-container">
+                            <FormItem label="Provider Logo:" class="float-right" ref="form_item">
+                                <input type="file" ref="file_input" accept="image/*"/>
+                                <!--<div class="avatar-container">
                                     <Icon type="ios-podium-outline" size="96" color="#ddd"/>
                                     <p class="logo-hint">click to add logo</p>
-                                </div>
+                                </div>-->
                             </FormItem>
                         </Col>
                     </Row>
@@ -78,7 +79,7 @@
                         insurer_type: '',
                         phone_number: '',
                         email: '',
-                        logo_url: ''
+                        logo: ''
                     },
 
                 formValidationRules: {
@@ -94,19 +95,24 @@
                         {required: true, message: "Type of insurer is required", trigger: 'change'}
                     ],
 
-                    email: [
-                        {required: true, message: "email address is required", trigger: 'blur'},
-                    ]
+                    logo: [
+                        {required: true, message: "A company logo is required", trigger: 'change'}
+                    ],
                 }
             }
         },
 
         methods: {
             saveProvider() {
-
+                let form = new FormData();
+                form.append('company_name', this.ProviderForm.company_name);
+                form.append('phone_number', this.ProviderForm.phone_number);
+                form.append('email', this.ProviderForm.email);
+                form.append('insurer_type', this.ProviderForm.insurer_type);
+                form.append('logo', this.$refs.file_input.files[0]);
                 // save insurance provider to database
                 this.$store.dispatch('provider/create', {
-                    'providerData': this.ProviderForm
+                    'providerData': form
                 }).then((data) => {
                     this.$root.$emit("newProviderSaveSuccess", data);
                     this.modal_active = false;

@@ -95,6 +95,7 @@ import $axios from "../utils/http";
                                                 } else {
                                                     this.$Message.error('Unable to connect to server!');
                                                 }
+                                                this.loading = false;
                                             });
                     } else {
                         this.$Message.error('The information you provided is incomplete!');

@@ -1,5 +1,5 @@
 <template>
-<div class="page-container">
+<div class="page-container" ref="container">
     <div class="page-header">
         <span class="header-title">Patient Details</span>
         <div style="position: absolute; right: 20px; font-size: 16px; display: inline;">
@@ -85,10 +85,22 @@
     <p class="section-header-text">INSURANCE POLICY</p>
         <Card dis-hover class="section-card">
             <div class="page-contents">
-                <div v-if="currentPatient.insurance_policy.scheme=='None'" class="insurance-policy-container">
+                <div v-if="currentPatient.insurance_policy.policy_number==null" class="insurance-policy-container">
                     <img src="../assets/no_insurance.png" alt="no insurance" srcset="">
                     <p class="no-insurance-text">Patient Has No Insurance Policy!</p>
-                    <Button type="primary">Add Insurance Policy</Button>
+                    <Button type="primary" @click="addInsurancePolicy">Add Insurance Policy</Button>
+                </div>
+
+                <div v-else>
+                    <Row>
+                        <Col span="12">
+                           <img src= alt="no insurance" srcset="">
+                        </Col>
+                        <Col span="12">
+                        
+                        </Col>
+                    </Row>
+
                 </div>
             </div>
         </Card>
@@ -137,6 +149,9 @@
 
 <script>
 import AddPatientForm from '@/components/AddPatientForm';
+import NewInsurancePolicyModal from '@/components/AddInsurancePolicy'
+import Vue from 'vue'
+import store from '../store/index'
     export default {
         props: ["id"],
         name: 'PatientDetails',
@@ -187,6 +202,15 @@ import AddPatientForm from '@/components/AddPatientForm';
                                     })
                         }
                     });
+            },
+
+            addInsurancePolicy() {
+                let ComponentClass = Vue.extend(NewInsurancePolicyModal);
+                let instance = new ComponentClass({store,
+                    propsData: { patient_id: this.currentPatient.id }
+                })
+                instance.$mount() // pass nothing
+                this.$refs.container.appendChild(instance.$el)
             },
         },
 
@@ -291,10 +315,8 @@ import AddPatientForm from '@/components/AddPatientForm';
 <style>
     .badge-span {
         margin-left: 10px;
-        font-family: 'Helvetica Neue';
         font-weight: bold;
         font-size: 12px;
-        line-height: 18px;
         border-radius: 10px;
         padding: 2px 6px;
         background: #e6ebf1;

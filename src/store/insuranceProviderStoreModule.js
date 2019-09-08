@@ -53,6 +53,10 @@ export default {
         setProviderList: (state, providers) => {
             Vue.set(state, 'providers', providers);
         },
+
+        addProviderToList: (state, provider) => {
+            state.providers.push(provider);
+        },
         /*
         setPatientList: (state, patients) => {
             Vue.set(state, 'patients', patients);
@@ -79,34 +83,26 @@ export default {
     // -----------------------------------------------------------------
     actions: {
 
-        fetch: async(context, payload) => {
+        fetch: (context) => new Promise(async function(resolve, reject) {
             console.log("fetch called");
             try {
                 let { data } = await $axios.get(context.state.api_endpoint);
                 console.log(data);
                 context.commit('setProviderList', data);
-
+                resolve(data);
             } catch (error) {
-                if (error.response) {
-                    switch (error.response.status) {
-                        // not logged in or token expired
-                        case 401:
-                            payload.router.push({ name: 'login', params: { show_alert: true } });
-                            break;
-
-                        default:
-                            break;
-                    }
-                }
+                reject(error);
             }
-        },
+        }),
+
         create: (context, payload) => new Promise(async function(resolve, reject) {
             //context.commit('setAsyncSavingPatient', true);
             console.log(payload.providerData);
             try {
-                let { data } = await $axios.post(context.state.api_endpoint, payload.providerData);
+                let { data } = await $axios.post(context.state.api_endpoint,
+                    payload.providerData, { headers: { 'Content-Type': 'multipart/form-data' } });
                 console.log(data);
-                //context.commit('addPatientToList', data);
+                context.commit('addProviderToList', data);
                 resolve(data);
             } catch (error) {
                 reject(error);

@@ -45,16 +45,16 @@
                     <Icon type="ios-person-outline" size=72 color="#ddd"></Icon>
                 </div>
                 <p class="account-name">{{currentUser.full_name}}</p>
-                <p class="badge-span account-role" style="margin-top: 5px;">{{currentUser.role}}</p>
+                <span class="badge-span account-role" style="margin-top: 5px;">{{currentUser.role}}</span>
                 <div class="account-button-group">
                     <Button @click="">
                         <Icon type="ios-cog-outline" size=20
-                              style="margin-bottom: 3px"></Icon>
+                              style="margin-bottom: 2px"></Icon>
                         Profile
                     </Button>
                     <Button type="primary" @click="logOut" style="margin-left: 10px;">
                         <Icon type="ios-exit-outline" size=20
-                              style="margin-bottom: 3px"></Icon>
+                              style="margin-bottom: 2px"></Icon>
                         Log Out
                     </Button>
                 </div>
@@ -81,6 +81,10 @@ export default {
         }
     },
 
+    mounted() {
+        //console.log(this.$store.getters['user/currentUser']);
+    },
+
     methods: {
         logOut() {
           this.$Modal.confirm({
@@ -90,8 +94,8 @@ export default {
                   cancelText: "No",
                   onOk: () => {
                     localStorage.removeItem("token");
+                    localStorage.removeItem("currentUser");
                     this.$router.push({ name: 'login'});
-                    window.location.reload();
                   }
               });
         }
@@ -118,7 +122,6 @@ export default {
         padding: 14px 12px;
         white-space: nowrap;
         text-overflow: ellipsis;
-        font-weight: 500;
     }
 
     .ivu-menu-vertical .ivu-menu-item > i{
@@ -128,7 +131,7 @@ export default {
     .ivu-menu-item-active:not(.ivu-menu-submenu)
     {
         background: #c7edce;
-        font-weight: bold;
+        font-weight: 500;
     }
     a {
         color: #4a4a4a;
@@ -143,6 +146,9 @@ export default {
 
     .user-account-container {
         height: 240px;
+        width: 240px;
+        position: fixed;
+        bottom: 10px;
         text-align: center;
     }
 
@@ -161,15 +167,12 @@ export default {
         font-size: 16px;
     }
     .account-role {
-        color: #555;
         font-size: 12px;
-        display: inline-block;
         padding-left: 8px;
         padding-right: 8px;
-        padding-bottom: 5px;
     }
 
     .account-button-group {
-        margin-top: 20px;
+        margin-top: 40px;
     }
 </style>

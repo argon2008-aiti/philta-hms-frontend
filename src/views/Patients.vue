@@ -83,11 +83,19 @@
                     </Button>
                 </div>
           </Modal>
-          <NoDataView v-if="patientCount==0"
-                      style="text-align: center; 
-                             vertical-align: middle;
-                             margin-top: 60px">
-          </NoDataView>
+          <div v-if="patientCount==0"
+                        style="text-align: center; 
+                              vertical-align: middle;
+                              margin-top: 20vh">
+            <NoDataView>
+            </NoDataView>
+            <Button type="primary" 
+                    size="large" 
+                    style="margin-top: 30px"
+                    @click="openNewPatientDialog()">
+               Add Patient
+            </Button>
+          </div>
           <Table v-else :columns="column_names" 
                  :data="patientList"
                  style="margin-top: 20px; padding-bottom: 20px"
@@ -242,7 +250,7 @@ export default {
           },
 
           {
-            title: 'OPD ID',
+            title: 'Patient ID',
             key: 'patient_id',
             ellipsis: true
           },
@@ -284,10 +292,18 @@ export default {
 
       fetchPatients() {
         this.table_loading = true;
-        this.$store.dispatch('patient/fetch', {
+         this.$Message.loading({
+                  top: 50,
+                  duration: 0,
+                  render: h => {
+                    return h('div', [
+                          h('p', "Getting Patients...")
+                      ]);
+                  }
+                });
+        return this.$store.dispatch('patient/fetch', {
                                router: this.$router
                              });
-        this.table_loading = false;
       },
 
       openNewPatientDialog() {
@@ -419,7 +435,37 @@ export default {
     },
 
     mounted() {
-      this.fetchPatients();
+      this.fetchPatients()
+         .then((result) => {
+             this.table_loading = false;
+             this.$$Message.destroy();
+         }).catch((error) => {
+              this.table_loading = false;
+              console.log(error.message);
+              this.$Message.destroy();
+              if (error.response) {
+                  switch (error.response.status) {
+                      // not logged in or token expired
+                      case 401:
+                          payload.router.push({ name: 'login', params: { show_alert: true } });
+                          break;
+
+                      default:
+                          break;
+                  }
+              }
+              if(error.message==="Network Error") {
+                this.$Message.error({
+                  top: 50,
+                  duration: 5,
+                  render: h => {
+                    return h('div', [
+                          h('p', "Unable to reach server!")
+                      ]);
+                  }
+                });
+              }
+         });;
       this.$root.$on("newPatientSaveSuccess", (data) => {
         this.add_user_modal_active = false;
         this.patient_to_edit = -1;
