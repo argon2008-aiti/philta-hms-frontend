@@ -2,20 +2,18 @@
 <div class="page-container" ref="container">
     <div class="page-header">
         <span class="header-title">Patient Details</span>
-        <div style="position: absolute; right: 20px; font-size: 16px; display: inline;">
-            <Icon type="ios-person-outline" size="32" style="margin-bottom: 5px;"></Icon>
+        <div style="position: absolute; right: 160px; top: 25px; font-size: 16px; display: inline;">
+            <Icon type="ios-person-outline" size="24" style=""></Icon>
             {{currentPatient.full_name}}
         </div>
-        <!--
         <span>
-            <Button type="error" 
+            <Button type="primary" 
                     size="large"
                     style="float: right"
-                    @click="deletePatient">
-                    Delete
+                    @click="seeDoctor">
+                    See Doctor
             </Button>
         </span>
-        -->
     </div>
     <div style="margin-top: 60px">
         <p class="section-header-text">BIO DATA</p>
@@ -66,7 +64,6 @@
             </div>
         </Card>
     </div>
-    <!--
     <div style="margin-top: 30px">
     <p class="section-header-text">PREVIOUS VISITS</p>
         <Card dis-hover class="section-card">
@@ -79,13 +76,12 @@
             </div>
         </Card>
     </div>
-    -->
 
     <div style="margin-top: 30px">
     <p class="section-header-text">INSURANCE POLICY</p>
         <Card dis-hover class="section-card">
             <div class="page-contents">
-                <div v-if="currentPatient.insurance_policy.policy_number==null" class="insurance-policy-container">
+                <div v-if="insurancePolicy.policy_number==null" class="insurance-policy-container">
                     <img src="../assets/no_insurance.png" alt="no insurance" srcset="">
                     <p class="no-insurance-text">Patient Has No Insurance Policy!</p>
                     <Button type="primary" @click="addInsurancePolicy">Add Insurance Policy</Button>
@@ -93,11 +89,34 @@
 
                 <div v-else>
                     <Row>
-                        <Col span="12">
-                           <img src= alt="no insurance" srcset="">
+                        <Col span="8">
+                           <img :src="providerLogoUrl" 
+                                alt="insurance logo" srcset="" 
+                                class="provider-logo">
                         </Col>
-                        <Col span="12">
-                        
+                        <Col span="13" class="patient-insurance-container">
+                            <div><Icon type="ios-podium-outline" size="24"></Icon>
+                                <span class="patient-info-inline">{{insurancePolicy.provider.company_name}}</span>
+                            </div>
+                            <div><Icon type="ios-barcode-outline" size="24"></Icon>
+                                <span class="patient-info-inline">{{insurancePolicy.policy_number}}</span>
+                            </div>
+                            <div><Icon type="ios-umbrella-outline" size="24"></Icon>
+                                <span class="patient-info-inline">GHS {{insurancePolicy.maximum_cover}}</span>
+                            </div>
+                            <div><Icon type="ios-calendar-outline" size="24"></Icon>
+                                <span class="patient-info-inline">{{insurancePolicy.policy_end | formatDate}}</span>
+                                <span class="badge-span expired" v-if="expired(insurancePolicy.policy_end)">expired</span>
+                                <span class="badge-span" v-else>{{insurancePolicy.policy_end | daysUntilExpire}} days left </span>
+                            </div>
+                        </Col>
+                        <Col span="3">
+                            <Button 
+                                type="outline" 
+                                icon="md-create" 
+                                style="margin-top: 15px;"
+                                @click="editInsurancePolicy">
+                                Edit Info</Button>
                         </Col>
                     </Row>
 
@@ -148,10 +167,13 @@
 </template>
 
 <script>
+import moment from 'moment';
+
 import AddPatientForm from '@/components/AddPatientForm';
 import NewInsurancePolicyModal from '@/components/AddInsurancePolicy'
 import Vue from 'vue'
 import store from '../store/index'
+import { $api_base_url } from "../utils/http";
     export default {
         props: ["id"],
         name: 'PatientDetails',
@@ -162,8 +184,9 @@ import store from '../store/index'
 
         data() {
             return {
-                currentPatient: '',
-                edit_patient_modal: false
+                current_patient: '',
+                edit_patient_modal: false,
+                insuranceModal: null
             }
         },
 
@@ -174,7 +197,7 @@ import store from '../store/index'
 
             updatePatientData() {
                 this.$store.dispatch('patient/read', this.id).then((result) => {
-                this.currentPatient = result; 
+                this.current_patient = result; 
                 }).catch((err) => {
                 console.log(error);
                 });
@@ -206,18 +229,53 @@ import store from '../store/index'
 
             addInsurancePolicy() {
                 let ComponentClass = Vue.extend(NewInsurancePolicyModal);
-                let instance = new ComponentClass({store,
-                    propsData: { patient_id: this.currentPatient.id }
+                this.insuranceModal = new ComponentClass({store,
+                    propsData: { patient_id: this.currentPatient.id, 
+                                    title: "Add Insurance Policy"}
                 })
-                instance.$mount() // pass nothing
-                this.$refs.container.appendChild(instance.$el)
+                this.insuranceModal.$mount() // pass nothing
+                this.$refs.container.appendChild(this.insuranceModal.$el)
             },
+
+            editInsurancePolicy() {
+                let ComponentClass = Vue.extend(NewInsurancePolicyModal);
+                this.insuranceModal = new ComponentClass({store,
+                    propsData: { patient_id: this.currentPatient.id, 
+                                    title: "Edit Insurance Policy",
+                                    insurance_data: this.insurancePolicy }
+                })
+                this.insuranceModal.$mount() // pass nothing
+                this.$refs.container.appendChild(this.insuranceModal.$el)
+            },
+
+            expired: function(date) {
+                let today = moment();
+                let expire_date = moment(date);
+                return expire_date.diff(today, 'days') < 0;
+            },
+
+            seeDoctor: function() {
+                this.$router.push({name: 'consultations', params: {'id': this.id}});
+            }
         },
 
         computed: {
             asyncSavingPatient: function() {
                 return this.$store.getters['patient/asyncSavingPatient'];
             },
+
+            insurancePolicy: function() {
+                return this.currentPatient.insurance_policy;
+            },
+
+            providerLogoUrl: function() {
+                return $api_base_url + '/upload/' + this.insurancePolicy.provider.logo_url;
+            },
+
+            currentPatient: function() {
+               return this.$store.getters['patient/getPatientByID'](this.id);
+            }
+
         },
 
         created() {
@@ -225,12 +283,15 @@ import store from '../store/index'
         },
 
         mounted() {
-            this.$store.dispatch('patient/read', this.id).then((result) => {
+
+            /*this.$store.dispatch('patient/read', this.id).then((result) => {
                this.currentPatient = result; 
+               console.log(result);
             }).catch((err) => {
                console.log(error);
-            });
+            });*/
 
+            this.$store.dispatch('patient/fetch');
 
             this.$root.$on("newPatientSaveSuccess", (data) => {
                 this.edit_patient_modal = false;
@@ -245,6 +306,11 @@ import store from '../store/index'
                    }
                 });
 
+            });
+
+            this.$root.$on("insurancePolicyAdded", (data) => {
+                console.log("Insurance Policy Added");
+                this.insuranceModal.destroy();
             });
         } 
         
@@ -290,7 +356,8 @@ import store from '../store/index'
       font-size: 14px;
     }
 
-    .patient-bio-container > * {
+    .patient-bio-container > * ,
+    .patient-insurance-container > * {
       margin: 20px 0px;
     }
 
@@ -310,11 +377,18 @@ import store from '../store/index'
         color: #a8a8a8;
         font-size: 14px;
     }
+
+    .provider-logo {
+        max-width: 90%;
+        height: auto;
+        margin-top: 10px;
+
+    }
 </style>
 
 <style>
     .badge-span {
-        margin-left: 10px;
+        margin-left: 5px;
         font-weight: bold;
         font-size: 12px;
         border-radius: 10px;
@@ -326,5 +400,10 @@ import store from '../store/index'
         white-space: nowrap;
         vertical-align: center;
         position: relative;
+    }
+
+    .badge-span.expired {
+        background: #d7888a;
+        color: #860406;
     }
 </style>

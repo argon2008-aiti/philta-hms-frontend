@@ -1,5 +1,5 @@
 /** VUEX module for patients management in hospital management app **/
-import $axios from "../utils/http";
+import { $axios } from "../utils/http";
 import sortByKey from "../utils/sorter";
 import Vue from "vue";
 import randomcolor from 'randomcolor';
@@ -76,18 +76,21 @@ export default {
     },
     // -----------------------------------------------------------------
     actions: {
+
         fetch: (context) => new Promise(async function(resolve, reject) {
             // don't fetch if we already have patients. 
             if (context.getters.patientCount != 0) {
-                resolve(context.getters.all);
+                console.log("fetched from store");
+                resolve(context.getters.all('id'));
+                return;
             }
             // stuf to retrieve all the logged in user's todos from backend
             try {
                 let { data } = await $axios.get(context.state.api_endpoint);
                 data.map(patient => {
-                        return patient.avatarColor = randomcolor({ luminosity: 'dark' });
-                    })
-                    //console.log("This is second data " + data);
+                    return patient.avatarColor = randomcolor({ luminosity: 'dark' });
+                })
+                console.log("This is second data " + data);
                 context.commit('setPatientList', data);
                 resolve(data);
 
@@ -111,18 +114,14 @@ export default {
 
         read: (context, id) => new Promise(async function(resolve, reject) {
             // stuff to retrieve a particular todo data from the backend : CRUD READ ACTION
-            let patient = context.getters.getPatientByID(id);
-            if (!patient) {
-                try {
-                    let { data } = await $axios.get(context.state.api_endpoint, { params: { id: id } });
-                    resolve(data);
-                } catch (error) {
-                    reject(error);
-                }
-            } else {
-                resolve(patient);
+            try {
+                let { data } = await $axios.get(context.state.api_endpoint, { params: { id: id } });
+                resolve(data);
+            } catch (error) {
+                reject(error);
             }
         }),
+
         update: (context, payload) => new Promise(async function(resolve, reject) {
             // stuff to update a particular todo data to the backend : CRUD UPDATE ACTION
             context.commit('setAsyncSavingPatient', true);
@@ -131,13 +130,14 @@ export default {
                 data.avatarColor = payload.patientData.avatarColor;
                 context.commit('updatePatientData', data);
                 resolve(data);
-                //console.log(data);
+                console.log(data);
             } catch (error) {
                 reject(error);
             }
             context.commit('setAsyncSavingPatient', false);
 
         }),
+
         delete: (context, index) => new Promise(async function(resolve, reject) {
             let patient = context.getters.getPatientByIndex(index);
             try {

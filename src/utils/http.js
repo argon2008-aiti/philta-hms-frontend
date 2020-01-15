@@ -9,4 +9,6 @@ const $axios = axios.create({
 $axios.defaults.headers.common["Authorization"] =
     "Bearer " + localStorage.getItem('token');
 
-export default $axios;
+const $api_base_url = API_BASE_URL;
+
+export { $axios, $api_base_url };

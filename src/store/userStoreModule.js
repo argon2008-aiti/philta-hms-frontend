@@ -1,5 +1,5 @@
 /** VUEX module for patients management in hospital management app **/
-import $axios from "../utils/http";
+import { $axios } from "../utils/http";
 import Vue from "vue";
 
 export default {

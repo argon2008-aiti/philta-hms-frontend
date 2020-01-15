@@ -1,14 +1,15 @@
 <template>
           <Modal v-model="modal_active"
-                title="Add Insurance Policy"
+                :title="title"
                 :z-index=5000
+                :on-visible-change="visibleChange"
                 class-name="vertical-center-modal">
                 <Form ref="providerForm" label-position="top" :rules="formValidationRules" :model="PolicyForm">
                     <FormItem label="Insurance Provider:" prop="provider">
-                        <Select v-model="PolicyForm.provider"
+                        <Select v-model="PolicyForm.provider" 
                             placeholder="Choose an insurance company">
                             <Option v-for="provider in providers" :key="provider._id" :value="provider._id">
-                                {{provider.company_name}}
+                            {{provider.company_name}}
                             </Option>
                         </Select>
                     </FormItem>
@@ -67,7 +68,7 @@
 <script>
     export default {
         name: 'NewInsurancePolicyModal',
-        props: ['patient_id'],
+        props: ['patient_id', 'title', 'insurance_data'],
 
         data() {
             return {
@@ -115,10 +116,16 @@
                     'patientData': payload
                 }).then((data) => {
                     console.log(data);
+                    this.$root.$emit("insurancePolicyAdded", data);
+                    this.modal_active = false;
                 }).catch((error) => {
                     console.log(error);
                 });
             },
+
+            visibleChange(state) {
+                console.log(state);
+            }
         },
 
         mounted() {
@@ -130,6 +137,15 @@
                 }).catch((error) => {
                     console.log(error);
                 });
+
+            // prepopulate form if this is an edit
+            if(this.insurance_data.policy_number) {
+                this.PolicyForm.provider = this.insurance_data.provider._id;
+                this.PolicyForm.policy_number = this.insurance_data.policy_number;
+                this.PolicyForm.maximum_cover = this.insurance_data.maximum_cover;
+                this.PolicyForm.policy_start = this.insurance_data.policy_start;
+                this.PolicyForm.policy_end = this.insurance_data.policy_end;
+            }
         }
 
     }

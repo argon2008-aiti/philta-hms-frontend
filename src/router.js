@@ -55,7 +55,7 @@ let router = new Router({
                 display_name: 'Consultations',
                 requiresAuth: true
             },
-            component: Consultations
+            component: Consultations,
         },
 
         {

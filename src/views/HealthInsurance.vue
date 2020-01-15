@@ -67,9 +67,7 @@ export default {
 
   methods: {
     fetchProviders() {
-       return this.$store.dispatch('provider/fetch', {
-                               router: this.$router
-                             });
+       return this.$store.dispatch('provider/fetch');
     },
 
     addInsuranceProvider() {
@@ -90,12 +88,13 @@ export default {
     this.fetchProviders()
        .then((result) => {
           console.log(result);
-       }).catch((err) => {
-          console.log(err);
-          if (err.response) {
-              switch (err.response.status) {
+       }).catch((error) => {
+          console.log(error);
+          if (error.response) {
+              switch (error.response.status) {
                   // not logged in or token expired
                   case 401:
+                      localStorage.removeItem('token');
                       this.$router.push({ name: 'login', params: { show_alert: true } });
                       break;
 
@@ -104,7 +103,7 @@ export default {
               }
           } 
           
-          else {
+          if(error.message==="Network Error") {
               console.log("Unable to reach server");
               this.$Message.error({
                 top: 50,
@@ -116,7 +115,7 @@ export default {
                 }
               })
           }
-       });;
+       });
     this.$root.$on("newProviderSaveSuccess", (data) => {
       this.$Message.success({
         top: 50,

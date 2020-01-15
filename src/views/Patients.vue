@@ -8,7 +8,7 @@
                 <Badge :count="patientCount" class-name="patient-count-badge"></Badge>
               </span>
           </Col>
-          <Col span=8>
+          <Col span=14>
             <AutoComplete 
                   size="large" 
                   :v-model="current_search"
@@ -25,6 +25,7 @@
                   </Option>
                   </AutoComplete>
           </Col>
+          <!--
           <Col span=8>
              <Tooltip content="Sort By..." placement="right">
               <span style="padding: 10px;">
@@ -48,8 +49,8 @@
                 </Select>
               </span>
               </Tooltip>
-          </Col>
-          <Col span=4>
+          </Col>-->
+          <Col span=6>
             <Button type="primary" 
                     size="large" 
                     style="float: right;"
@@ -98,7 +99,6 @@
           </div>
           <Table v-else :columns="column_names" 
                  :data="patientList"
-                 style="margin-top: 20px; padding-bottom: 20px"
                  stripe
                  :loading="table_loading"
                  @on-row-click="row_clicked"
@@ -242,7 +242,7 @@ export default {
           },
 
           {
-            title: 'Name',
+            title: 'NAME',
             slot: 'full_name',
             minWidth: 120,
             ellipsis: true,
@@ -250,19 +250,19 @@ export default {
           },
 
           {
-            title: 'Patient ID',
+            title: 'PATIENT ID',
             key: 'patient_id',
             ellipsis: true
           },
 
           {
-            title: 'Phone',
+            title: 'PHONE',
             key: 'phone_number',
             ellipsis: true
           },
 
           {
-            title: 'Email',
+            title: 'EMAIL',
             key: 'email',
             ellipsis: true
           },
@@ -301,9 +301,7 @@ export default {
                       ]);
                   }
                 });
-        return this.$store.dispatch('patient/fetch', {
-                               router: this.$router
-                             });
+        return this.$store.dispatch('patient/fetch');
       },
 
       openNewPatientDialog() {
@@ -435,19 +433,21 @@ export default {
     },
 
     mounted() {
+      console.log(this.$root);
       this.fetchPatients()
          .then((result) => {
              this.table_loading = false;
-             this.$$Message.destroy();
+             this.$Message.destroy();
          }).catch((error) => {
               this.table_loading = false;
-              console.log(error.message);
+              console.log(error.response.status);
               this.$Message.destroy();
               if (error.response) {
                   switch (error.response.status) {
                       // not logged in or token expired
                       case 401:
-                          payload.router.push({ name: 'login', params: { show_alert: true } });
+                          localStorage.removeItem('token');
+                          this.$router.push({ name: 'login', params: { show_alert: true } });
                           break;
 
                       default:
@@ -465,7 +465,8 @@ export default {
                   }
                 });
               }
-         });;
+         });
+
       this.$root.$on("newPatientSaveSuccess", (data) => {
         this.add_user_modal_active = false;
         this.patient_to_edit = -1;
@@ -481,10 +482,6 @@ export default {
 
       });
     },
-
-    watch: {
-
-    }
 
 }
 </script>

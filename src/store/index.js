@@ -4,6 +4,8 @@ import Vuex from 'vuex'
 import patientStoreModule from "./patientStoreModule";
 import insuranceProviderStoreModule from "./insuranceProviderStoreModule";
 import userStoreModule from "./userStoreModule";
+import queueStoreModule from "./queueStoreModule";
+import medicalReportStoreModule from './medicalReportStoreModule';
 
 Vue.use(Vuex)
 
@@ -12,5 +14,7 @@ export default new Vuex.Store({
         patient: patientStoreModule,
         provider: insuranceProviderStoreModule,
         user: userStoreModule,
+        queue: queueStoreModule,
+        report: medicalReportStoreModule,
     }
 })

@@ -20,6 +20,7 @@
                 <MenuItem name="consultations">
                     <Icon type='ios-glasses'/>
                     CONSULTATIONS
+                    <Badge status="processing" v-show="queueActive" class="notice-badge"></Badge>
                 </MenuItem>
             </router-link>
 
@@ -78,6 +79,10 @@ export default {
     computed: {
         currentUser() {
             return this.$store.getters['user/currentUser'];
+        },
+
+        queueActive() {
+            return this.$store.getters['queue/queueCount'] > 0;
         }
     },
 
@@ -174,5 +179,9 @@ export default {
 
     .account-button-group {
         margin-top: 40px;
+    }
+
+    .notice-badge {
+        float: right;
     }
 </style>
