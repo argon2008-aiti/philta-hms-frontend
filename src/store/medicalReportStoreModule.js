@@ -1,6 +1,5 @@
 import { $axios } from "../utils/http";
 import { isToday } from "../utils/isToday";
-import Vue from "vue";
 
 export default {
     namespaced: true,
@@ -62,6 +61,7 @@ export default {
                 let { data } = await $axios.get(context.state.api_endpoint);
                 context.commit('addReports', data);
                 resolve(data);
+                console.log(data);
             } catch (error) {
                 reject(error);
             }
@@ -82,9 +82,9 @@ export default {
                     }
                     payload.diagnostics = diagnostic_documents;
                 }
-
                 let { data } = await $axios.post(context.state.api_endpoint, payload);
-                await context.commit('appendToReports', data);
+                console.log(data);
+                context.commit('appendToReports', data);
                 resolve(data);
             } catch (error) {
                 reject(error);

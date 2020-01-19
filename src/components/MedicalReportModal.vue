@@ -1,11 +1,9 @@
 <template>
           <Modal v-model="modal_active"
-                :z-index=5000
                 :closable="false"
                 :mask-closable="false"
-                :scrollable="true"
                 width=90
-                class-name="vertical-center-modal">
+                class-name="vertical-center-modal medical-report-modal">
 
                 <div slot="header">
                     <Row>
@@ -55,7 +53,7 @@
 
                             <Col span="8">
                                 <!-- HPI --------->
-                                <Divider orientation="right" size="small" class="form-group-divider">History of Present Illness (HPI)</Divider>
+                                <Divider orientation="center" class="form-group-divider">History of Present Illness (HPI)</Divider>
 
                                 <FormItem prop="condition_onset" label="Condition Onset"
                                                @on-form-blur="textChanged($event, 'condition_onset')">
@@ -96,7 +94,7 @@
                                 </FormItem>
                             </Col>
                             <Col span="8">
-                                <Divider orientation="right" size="small" class="form-group-divider">Medical History</Divider>
+                                <Divider orientation="center" class="form-group-divider">Medical History</Divider>
                                 <FormItem prop="employment_activities" label="Employment/Social Activities">
                                     <Select 
                                         filterable
@@ -149,496 +147,551 @@
                     </Form>
                     </TabPane>
                     <TabPane label="Objective" name="name2">
-                        <Form ref="formInline" :model="medicalReportForm" :rules="formValidationRules">
-                                <Row :gutter="32">
-                                <Col span="6" style="overflow-y: scroll;">
-                                    <Divider orientation="right" size="small" class="form-group-divider">Visual Acuity</Divider>
-                                    <!-- CC --------->
-                                    <FormItem prop="chief_complaint" label="Snellen Test Unaided">
-                                        <Checkbox v-model="medicalReportForm.snellen_test_unaided.tested" style="float:right;"></Checkbox>
-                                        <Row gutter=12>
-                                            <Col span="12">
-                                                <Input type="text" 
-                                                    @input="ocularTextChanged($event, 'snellen_test_unaided', 'right_eye')"
-                                                    size="small"
-                                                    :disabled="!medicalReportForm.snellen_test_unaided.tested"
-                                                    placeholder="Right Eye">
-                                                    <span slot="prepend">RE</span>
-                                                </Input>
-                                            </Col>
-                                            <Col span="12">
-                                                <Input type="text" 
-                                                    @input="ocularTextChanged($event, 'snellen_test_unaided', 'left_eye')"
-                                                    size="small"
-                                                    :disabled="!medicalReportForm.snellen_test_unaided.tested"
-                                                    placeholder="Left Eye">
-                                                    <span slot="prepend">LE</span>
-                                                </Input>
-                                            </Col>
-                                        </Row>
-                                    </FormItem>
+                        <Row>
+                            <Col span="20">
+                                <Row :gutter="6" v-show="isTop">
+                                    <Col span="12" class="scrollable-column">
+                                        <Divider orientation="center" class="form-group-divider" size="small">Visual Acuity</Divider>
+                                        <!-- CC --------->
+                                        <div style="margin-left: 20px; margin-right: 20px;">
+                                            <Checkbox v-model="medicalReportForm.snellen_test_unaided.tested"
+                                                    style="margin-bottom: 5px;">
+                                                Snellen Test Unaided
+                                            </Checkbox>
+                                            <Row gutter=12>
+                                                <Col span="12">
+                                                    <Input type="text" size="small" 
+                                                        @input="ocularTextChanged($event, 'snellen_test_unaided', 'right_eye')"
+                                                        :disabled="!medicalReportForm.snellen_test_unaided.tested"
+                                                        placeholder="Right Eye"
+                                                        class="input-class">
+                                                        <span slot="prepend">RE</span>
+                                                    </Input>
+                                                </Col>
+                                                <Col span="12">
+                                                    <Input type="text" size="small" 
+                                                        @input="ocularTextChanged($event, 'snellen_test_unaided', 'left_eye')"
+                                                        :disabled="!medicalReportForm.snellen_test_unaided.tested"
+                                                        placeholder="Left Eye"
+                                                        class="input-class">
+                                                        <span slot="prepend">LE</span>
+                                                    </Input>
+                                                </Col>
+                                            </Row>
 
-                                    <FormItem prop="chief_complaint" label="Snellen Test Aided (with correction)">
-                                        <Checkbox v-model="medicalReportForm.snellen_test_aided.tested" style="float:right;"></Checkbox>
-                                        <Row gutter=12>
-                                            <Col span="12">
-                                                <Input type="text" 
-                                                    @input="ocularTextChanged($event, 'snellen_test_aided', 'right_eye')"
-                                                    size="small"
-                                                    :disabled="!medicalReportForm.snellen_test_aided.tested"
-                                                    placeholder="Right Eye">
-                                                    <span slot="prepend">RE</span>
-                                                </Input>
-                                            </Col>
-                                            <Col span="12">
-                                                <Input type="text" 
-                                                    @input="ocularTextChanged($event, 'snellen_test_aided', 'left_eye')"
-                                                    size="small"
-                                                    :disabled="!medicalReportForm.snellen_test_aided.tested"
-                                                    placeholder="Left Eye">
-                                                    <span slot="prepend">LE</span>
-                                                </Input>
-                                            </Col>
-                                        </Row>
-                                    </FormItem>
-                                    <FormItem prop="chief_complaint" label="Counting Fingers  (CF)">
-                                        <Checkbox v-model="medicalReportForm.counting_finger.tested" style="float:right;"></Checkbox>
-                                        <Row gutter=12>
-                                            <Col span="12">
-                                                <Select type="text" 
-                                                    size="small"
-                                                    @input="ocularTextChanged($event, 'counting_finger', 'right_eye')"
-                                                    :disabled="!medicalReportForm.counting_finger.tested"
-                                                    placeholder="Right Eye">
-                                                    <span slot="prepend">RE</span>
-                                                    <Option value="0">CF-1</Option>
-                                                    <Option value="1">CF-2</Option>
-                                                    <Option value="2">CF-3</Option>
-                                                </Select>
-                                            </Col>
-                                            <Col span="12">
-                                                <Select type="text" 
-                                                    size="small"
-                                                    @input="ocularTextChanged($event, 'counting_finger', 'left_eye')"
-                                                    :disabled="!medicalReportForm.counting_finger.tested"
-                                                    placeholder="Left Eye">
-                                                    <span slot="prepend">LE</span>
-                                                    <Option value="0">CF-1</Option>
-                                                    <Option value="1">CF-2</Option>
-                                                    <Option value="2">CF-3</Option>
-                                                </Select>
-                                            </Col>
-                                        </Row>
-                                    </FormItem>
-                                    <FormItem prop="chief_complaint" label="Hand Motion  (HM at 1m)">
-                                        <Checkbox v-model="medicalReportForm.hand_motion.tested" style="float:right;"></Checkbox>
-                                        <Row gutter=12>
-                                            <Col span="12">
-                                                <Select type="text" 
-                                                    size="small"
-                                                    @input="ocularTextChanged($event, 'hand_motion', 'right_eye')"
-                                                    :disabled="!medicalReportForm.hand_motion.tested"
-                                                    placeholder="Right Eye">
-                                                    <span slot="prepend">RE</span>
-                                                    <Option value="poor">HM -</Option>
-                                                    <Option value="good">HM +</Option>
-                                                </Select>
-                                            </Col>
-                                            <Col span="12">
-                                                <Select type="text" 
-                                                    size="small"
-                                                    @input="ocularTextChanged($event, 'hand_motion', 'left_eye')"
-                                                    :disabled="!medicalReportForm.hand_motion.tested"
-                                                    placeholder="Left Eye">
-                                                    <span slot="prepend">LE</span>
-                                                    <Option value="poor">HM -</Option>
-                                                    <Option value="good">HM +</Option>
-                                                </Select>
-                                            </Col>
-                                        </Row>
-                                    </FormItem>
-                                    <FormItem prop="chief_complaint" label="Light Perception (LP at 1m)">
-                                        <Checkbox v-model="medicalReportForm.light_perception.tested" style="float:right;"></Checkbox>
-                                        <Row gutter=12>
-                                            <Col span="12">
-                                                <Select type="text" 
-                                                    size="small"
-                                                    @input="ocularTextChanged($event, 'light_perception', 'right_eye')"
-                                                    :disabled="!medicalReportForm.light_perception.tested"
-                                                    placeholder="Right Eye">
-                                                    <span slot="prepend">RE</span>
-                                                    <Option value="poor">LP -</Option>
-                                                    <Option value="good">LP +</Option>
-                                                </Select>
-                                            </Col>
-                                            <Col span="12">
-                                                <Select type="text" 
-                                                    size="small"
-                                                    @input="ocularTextChanged($event, 'light_perception', 'left_eye')"
-                                                    :disabled="!medicalReportForm.light_perception.tested"
-                                                    placeholder="Left Eye">
-                                                    <span slot="prepend">LE</span>
+                                            <Checkbox v-model="medicalReportForm.snellen_test_aided.tested" 
+                                                    style="margin-bottom: 5px;">
+                                                Snellen Test Aided (with correction)
+                                            </Checkbox>
+                                            <Row gutter=12>
+                                                <Col span="12">
+                                                    <Input type="text" size="small" 
+                                                        @input="ocularTextChanged($event, 'snellen_test_aided', 'right_eye')"
+                                                        :disabled="!medicalReportForm.snellen_test_aided.tested"
+                                                        class="input-class"
+                                                        placeholder="Right Eye">
+                                                        <span slot="prepend">RE</span>
+                                                    </Input>
+                                                </Col>
+                                                <Col span="12">
+                                                    <Input type="text" size="small" 
+                                                        @input="ocularTextChanged($event, 'snellen_test_aided', 'left_eye')"
+                                                        :disabled="!medicalReportForm.snellen_test_aided.tested"
+                                                        class="input-class"
+                                                        placeholder="Left Eye">
+                                                        <span slot="prepend">LE</span>
+                                                    </Input>
+                                                </Col>
+                                            </Row>
+                                            <Checkbox v-model="medicalReportForm.counting_finger.tested" style="margin-bottom: 5px;">
+                                                Counting Fingers  (CF)
+                                            </Checkbox>
+                                            <Row gutter=12>
+                                                <Col span="12">
+                                                    <Select type="text" size="small" 
+                                                        @input="ocularTextChanged($event, 'counting_finger', 'right_eye')"
+                                                        :disabled="!medicalReportForm.counting_finger.tested"
+                                                        class="input-class"
+                                                        placeholder="Right Eye">
+                                                        <span slot="prepend">RE</span>
+                                                        <Option value="0">CF-1</Option>
+                                                        <Option value="1">CF-2</Option>
+                                                        <Option value="2">CF-3</Option>
+                                                    </Select>
+                                                </Col>
+                                                <Col span="12">
+                                                    <Select type="text" size="small" 
+                                                        @input="ocularTextChanged($event, 'counting_finger', 'left_eye')"
+                                                        :disabled="!medicalReportForm.counting_finger.tested"
+                                                        class="input-class"
+                                                        placeholder="Left Eye">
+                                                        <span slot="prepend">LE</span>
+                                                        <Option value="0">CF-1</Option>
+                                                        <Option value="1">CF-2</Option>
+                                                        <Option value="2">CF-3</Option>
+                                                    </Select>
+                                                </Col>
+                                            </Row>
+                                            <Checkbox v-model="medicalReportForm.hand_motion.tested" style="margin-bottom: 5px;">
+                                                Hand Motion  (HM at 1m)
+                                            </Checkbox>
+                                            <Row gutter=12>
+                                                <Col span="12">
+                                                    <Select type="text" size="small" 
+                                                        @input="ocularTextChanged($event, 'hand_motion', 'right_eye')"
+                                                        :disabled="!medicalReportForm.hand_motion.tested"
+                                                        class="input-class"
+                                                        placeholder="Right Eye">
+                                                        <span slot="prepend">RE</span>
+                                                        <Option value="poor">HM -</Option>
+                                                        <Option value="good">HM +</Option>
+                                                    </Select>
+                                                </Col>
+                                                <Col span="12">
+                                                    <Select type="text" size="small" 
+                                                        @input="ocularTextChanged($event, 'hand_motion', 'left_eye')"
+                                                        :disabled="!medicalReportForm.hand_motion.tested"
+                                                        class="input-class"
+                                                        placeholder="Left Eye">
+                                                        <span slot="prepend">LE</span>
+                                                        <Option value="poor">HM -</Option>
+                                                        <Option value="good">HM +</Option>
+                                                    </Select>
+                                                </Col>
+                                            </Row>
+                                            <Checkbox v-model="medicalReportForm.light_perception.tested" style="margin-bottom: 5px;">
+                                                Light Perception (LP at 1m)
+                                            </Checkbox>
+                                            <Row gutter=12>
+                                                <Col span="12">
+                                                    <Select type="text" size="small" 
+                                                        @input="ocularTextChanged($event, 'light_perception', 'right_eye')"
+                                                        :disabled="!medicalReportForm.light_perception.tested"
+                                                        class="input-class"
+                                                        placeholder="Right Eye">
+                                                        <span slot="prepend">RE</span>
+                                                        <Option value="poor">LP -</Option>
+                                                        <Option value="good">LP +</Option>
+                                                    </Select>
+                                                </Col>
+                                                <Col span="12">
+                                                    <Select type="text" size="small" 
+                                                        @input="ocularTextChanged($event, 'light_perception', 'left_eye')"
+                                                        :disabled="!medicalReportForm.light_perception.tested"
+                                                        class="input-class"
+                                                        placeholder="Left Eye">
+                                                        <span slot="prepend">LE</span>
 
-                                                    <Option value="poor">LP -</Option>
-                                                    <Option value="good">LP +</Option>
-                                                </Select>
-                                            </Col>
-                                        </Row>
-                                    </FormItem>
+                                                        <Option value="poor">LP -</Option>
+                                                        <Option value="good">LP +</Option>
+                                                    </Select>
+                                                </Col>
+                                            </Row>
+                                        </div>
+                                    </Col>
+                                    <Col span="12">
+                                        <Divider orientation="center" class="form-group-divider" size="small">Refraction</Divider>
+                                            <div style="margin-left: 20px; margin-right: 20px;">
+                                            <Checkbox v-model="medicalReportForm.spherical_power.tested" style="margin-bottom: 5px;">Spherical Power (SPH)</Checkbox>
+                                            <Row gutter=12>
+                                                <Col span="12">
+                                                    <Input type="text" size="small" 
+                                                        @input="ocularTextChanged($event, 'spherical_power', 'right_eye')"
+                                                        class="input-class"
+                                                        :disabled="!medicalReportForm.spherical_power.tested">
+                                                        <span slot="prepend">RE</span>
+                                                        <span slot="append">dpt</span>
+                                                    </Input>
+                                                </Col>
+                                                <Col span="12">
+                                                    <Input type="text" size="small" 
+                                                        @input="ocularTextChanged($event, 'spherical_power', 'left_eye')"
+                                                        class="input-class"
+                                                        :disabled="!medicalReportForm.spherical_power.tested">
+                                                        <span slot="prepend">LE</span>
+                                                        <span slot="append">dpt</span>
+                                                    </Input>
+                                                </Col>
+                                            </Row>
+                                            <Checkbox v-model="medicalReportForm.cylindrical_power.tested" style="margin-bottom: 5px;">Cylindrical Power (CYL)</Checkbox>
+                                            <Row gutter=12>
+                                                <Col span="12">
+                                                    <Input type="text" size="small" 
+                                                        @input="ocularTextChanged($event, 'cylindrical_power', 'right_eye')"
+                                                        class="input-class"
+                                                        :disabled="!medicalReportForm.cylindrical_power.tested">
+                                                        <span slot="prepend">RE</span>
+                                                        <span slot="append">dpt</span>
+                                                    </Input>
+                                                </Col>
+                                                <Col span="12">
+                                                    <Input type="text" size="small" 
+                                                        @input="ocularTextChanged($event, 'cylindrical_power', 'left_eye')"
+                                                        class="input-class"
+                                                        :disabled="!medicalReportForm.cylindrical_power.tested">
+                                                        <span slot="prepend">LE</span>
+                                                        <span slot="append">dpt</span>
+                                                    </Input>
+                                                </Col>
+                                            </Row>
+                                            <Checkbox v-model="medicalReportForm.axes.tested" style="margin-bottom: 5px;">Axes / Meridian (X)</Checkbox>
+                                            <Row gutter=12>
+                                                <Col span="12">
+                                                    <Input type="text" size="small" 
+                                                        @input="ocularTextChanged($event, 'axes', 'right_eye')"
+                                                        class="input-class"
+                                                        :disabled="!medicalReportForm.axes.tested">
+                                                        <span slot="prepend">RE</span>
+                                                        <span slot="append">&deg</span>
+                                                    </Input>
+                                                </Col>
+                                                <Col span="12">
+                                                    <Input type="text" size="small" 
+                                                        @input="ocularTextChanged($event, 'axes', 'left_eye')"
+                                                        class="input-class"
+                                                        :disabled="!medicalReportForm.axes.tested">
+                                                        <span slot="prepend">LE</span>
+                                                        <span slot="append">&deg</span>
+                                                    </Input>
+                                                </Col>
+                                            </Row>
+                                            <Checkbox v-model="medicalReportForm.presbyopia_power.tested" style="margin-bottom: 5px;">Add Power (Presbyopia)</Checkbox>
+                                            <Row gutter=12>
+                                                <Col span="12">
+                                                    <Input type="text" size="small" 
+                                                        @input="ocularTextChanged($event, 'presbyopia_power', 'right_eye')"
+                                                        class="input-class"
+                                                        :disabled="!medicalReportForm.presbyopia_power.tested">
+                                                        <span slot="prepend">RE</span>
+                                                        <span slot="append">dpt</span>
+                                                    </Input>
+                                                </Col>
+                                                <Col span="12">
+                                                    <Input type="text" size="small" 
+                                                        @input="ocularTextChanged($event, 'presbyopia_power', 'left_eye')"
+                                                        class="input-class"
+                                                        :disabled="!medicalReportForm.presbyopia_power.tested">
+                                                        <span slot="prepend">LE</span>
+                                                        <span slot="append">dpt</span>
+                                                    </Input>
+                                                </Col>
+                                            </Row>
+                                            </div>
+                                    </Col>
+                                   
+                                </Row>
+                                <Row v-show="!isTop">
+                                    <Col span="12" class="scrollable-column">
+                                        <Divider orientation="center" class="form-group-divider" size="small">Pupillometry</Divider>
 
-                                </Col>
-                                <Col span="6">
-                                    <Divider orientation="right" size="small" class="form-group-divider">Refraction</Divider>
-                                    <FormItem prop="chief_complaint" label="Spherical Power (SPH)">
-                                        <Checkbox v-model="medicalReportForm.spherical_power.tested" style="float:right;"></Checkbox>
-                                        <Row gutter=12>
-                                            <Col span="12">
-                                                <Input type="text" 
-                                                    size="small"
-                                                    @input="ocularTextChanged($event, 'spherical_power', 'right_eye')"
-                                                    :disabled="!medicalReportForm.spherical_power.tested">
-                                                    <span slot="prepend">RE</span>
-                                                    <span slot="append">dpt</span>
-                                                </Input>
-                                            </Col>
-                                            <Col span="12">
-                                                <Input type="text" 
-                                                    size="small"
-                                                    @input="ocularTextChanged($event, 'spherical_power', 'left_eye')"
-                                                    :disabled="!medicalReportForm.spherical_power.tested">
-                                                    <span slot="prepend">LE</span>
-                                                    <span slot="append">dpt</span>
-                                                </Input>
-                                            </Col>
-                                        </Row>
-                                    </FormItem>
-                                    <FormItem prop="chief_complaint" label="Cylindrical Power (CYL)">
-                                        <Checkbox v-model="medicalReportForm.cylindrical_power.tested" style="float:right;"></Checkbox>
-                                        <Row gutter=12>
-                                            <Col span="12">
-                                                <Input type="text" 
-                                                    size="small"
-                                                    @input="ocularTextChanged($event, 'cylindrical_power', 'right_eye')"
-                                                    :disabled="!medicalReportForm.cylindrical_power.tested">
-                                                    <span slot="prepend">RE</span>
-                                                    <span slot="append">dpt</span>
-                                                </Input>
-                                            </Col>
-                                            <Col span="12">
-                                                <Input type="text" 
-                                                    size="small"
-                                                    @input="ocularTextChanged($event, 'cylindrical_power', 'left_eye')"
-                                                    :disabled="!medicalReportForm.cylindrical_power.tested">
-                                                    <span slot="prepend">LE</span>
-                                                    <span slot="append">dpt</span>
-                                                </Input>
-                                            </Col>
-                                        </Row>
-                                    </FormItem>
-                                    <FormItem prop="chief_complaint" label="Axes / Meridian (X)">
-                                        <Checkbox v-model="medicalReportForm.axes.tested" style="float:right;"></Checkbox>
-                                        <Row gutter=12>
-                                            <Col span="12">
-                                                <Input type="text" 
-                                                    size="small"
-                                                    @input="ocularTextChanged($event, 'axes', 'right_eye')"
-                                                    :disabled="!medicalReportForm.axes.tested">
-                                                    <span slot="prepend">RE</span>
-                                                    <span slot="append">&deg</span>
-                                                </Input>
-                                            </Col>
-                                            <Col span="12">
-                                                <Input type="text" 
-                                                    size="small"
-                                                    @input="ocularTextChanged($event, 'axes', 'left_eye')"
-                                                    :disabled="!medicalReportForm.axes.tested">
-                                                    <span slot="prepend">LE</span>
-                                                    <span slot="append">&deg</span>
-                                                </Input>
-                                            </Col>
-                                        </Row>
-                                    </FormItem>
-                                    <FormItem prop="chief_complaint" label="Add Power (Presbyopia)">
-                                        <Checkbox v-model="medicalReportForm.presbyopia_power.tested" style="float:right;"></Checkbox>
-                                        <Row gutter=12>
-                                            <Col span="12">
-                                                <Input type="text" 
-                                                    size="small"
-                                                    @input="ocularTextChanged($event, 'presbyopia_power', 'right_eye')"
-                                                    :disabled="!medicalReportForm.presbyopia_power.tested">
-                                                    <span slot="prepend">RE</span>
-                                                    <span slot="append">dpt</span>
-                                                </Input>
-                                            </Col>
-                                            <Col span="12">
-                                                <Input type="text" 
-                                                    size="small"
-                                                    @input="ocularTextChanged($event, 'presbyopia_power', 'left_eye')"
-                                                    :disabled="!medicalReportForm.presbyopia_power.tested">
-                                                    <span slot="prepend">LE</span>
-                                                    <span slot="append">dpt</span>
-                                                </Input>
-                                            </Col>
-                                        </Row>
-                                    </FormItem>
-                                </Col>
+                                        <div style="margin-left: 20px; margin-right: 20px;">
+                                            <Checkbox v-model="medicalReportForm.pupil_shape_accomodation.tested"
+                                                      style="margin-bottom: 5px;">
+                                                Shape and Accomodation
+                                            </Checkbox>
+                                            <Row gutter=12>
+                                                <Col span="12">
+                                                    <Input type="text" size="small"
+                                                        @input="ocularTextChanged($event, 'pupil_shape_accomodation', 'right_eye')"
+                                                        :disabled="!medicalReportForm.pupil_shape_accomodation.tested"
+                                                        class="input-class"
+                                                        placeholder="Round Accomodating">
+                                                        <span slot="prepend">RE</span>
+                                                    </Input>
+                                                </Col>
+                                                <Col span="12">
+                                                    <Input type="text" size="small"
+                                                        @input="ocularTextChanged($event, 'pupil_shape_accomodation', 'left_eye')"
+                                                        :disabled="!medicalReportForm.pupil_shape_accomodation.tested"
+                                                        class="input-class"
+                                                        placeholder="Round Accomodating">
+                                                        <span slot="prepend">LE</span>
+                                                    </Input>
+                                                </Col>
+                                            </Row>
 
-                                <Col span="6" style="overflow-y: scroll;">
-                                    <!-- HPI --------->
-                                    <Divider orientation="right" size="small" class="form-group-divider">Pupillometry</Divider>
+                                            <Checkbox v-model="medicalReportForm.pupil_diameter.dim.tested"
+                                                      style="margin-bottom: 5px;">
+                                                Diameter (dark conditions)
+                                            </Checkbox>
+                                            <Row gutter=12>
+                                                <Col span="12">
+                                                    <Input type="text" 
+                                                        size="small"
+                                                        @input="setPupilDiameter($event, 'dim', 'right_eye')"
+                                                        class="input-class"
+                                                        :disabled="!medicalReportForm.pupil_diameter.dim.tested">
+                                                        <span slot="prepend">RE</span>
+                                                        <span slot="append">mm</span>
+                                                    </Input>
+                                                </Col>
+                                                <Col span="12">
+                                                    <Input type="text" 
+                                                        size="small"
+                                                        @input="setPupilDiameter($event, 'dim', 'left_eye')"
+                                                        class="input-class"
+                                                        :disabled="!medicalReportForm.pupil_diameter.dim.tested">
+                                                        <span slot="prepend">LE</span>
+                                                        <span slot="append">mm</span>
+                                                    </Input>
+                                                </Col>
+                                            </Row>
 
-                                    <FormItem prop="shape_and_accomodation" label="Shape and Accomodation">
-                                        <Checkbox v-model="medicalReportForm.pupil_shape_accomodation.tested" style="float:right;"></Checkbox>
-                                        <Row gutter=12>
-                                            <Col span="12">
-                                                <Input type="text" size="small"
-                                                    @input="ocularTextChanged($event, 'pupil_shape_accomodation', 'right_eye')"
-                                                    :disabled="!medicalReportForm.pupil_shape_accomodation.tested"
-                                                    placeholder="Round Accomodating">
-                                                    <span slot="prepend">RE</span>
-                                                </Input>
-                                            </Col>
-                                            <Col span="12">
-                                                <Input type="text" size="small"
-                                                    @input="ocularTextChanged($event, 'pupil_shape_accomodation', 'left_eye')"
-                                                    :disabled="!medicalReportForm.pupil_shape_accomodation.tested"
-                                                    placeholder="Round Accomodating">
-                                                    <span slot="prepend">LE</span>
-                                                </Input>
-                                            </Col>
-                                        </Row>
-                                    </FormItem>
+                                            <Checkbox v-model="medicalReportForm.pupil_diameter.light.tested"
+                                                      style="margin-bottom: 5px;">
+                                                Diameter (normal conditions)
+                                            </Checkbox>
+                                            <Row gutter=12>
+                                                <Col span="12">
+                                                    <Input type="text" 
+                                                        size="small"
+                                                        @input="setPupilDiameter($event, 'light', 'right_eye')"
+                                                        class="input-class"
+                                                        :disabled="!medicalReportForm.pupil_diameter.light.tested">
+                                                        <span slot="prepend">RE</span>
+                                                        <span slot="append">mm</span>
+                                                    </Input>
+                                                </Col>
+                                                <Col span="12">
+                                                    <Input type="text" 
+                                                        size="small"
+                                                        @input="setPupilDiameter($event, 'light', 'left_eye')"
+                                                        class="input-class"
+                                                        :disabled="!medicalReportForm.pupil_diameter.light.tested">
+                                                        <span slot="prepend">LE</span>
+                                                        <span slot="append">mm</span>
+                                                    </Input>
+                                                </Col>
+                                            </Row>
 
-                                    <FormItem prop="chief_complaint" label="Pupil Diameter (Dim Conditions)">
-                                        <Checkbox v-model="medicalReportForm.pupil_diameter.dim.tested" style="float:right;"></Checkbox>
-                                        <Row gutter=12>
-                                            <Col span="12">
-                                                <Input type="text" 
-                                                    size="small"
-                                                    @input="setPupilDiameter($event, 'dim', 'right_eye')"
-                                                    :disabled="!medicalReportForm.pupil_diameter.dim.tested">
-                                                    <span slot="prepend">RE</span>
-                                                    <span slot="append">mm</span>
-                                                </Input>
-                                            </Col>
-                                            <Col span="12">
-                                                <Input type="text" 
-                                                    size="small"
-                                                    @input="setPupilDiameter($event, 'dim', 'left_eye')"
-                                                    :disabled="!medicalReportForm.pupil_diameter.dim.tested">
-                                                    <span slot="prepend">LE</span>
-                                                    <span slot="append">mm</span>
-                                                </Input>
-                                            </Col>
-                                        </Row>
-                                    </FormItem>
+                                            <Checkbox v-model="medicalReportForm.direct_reactivity.tested"
+                                                      style="margin-bottom: 5px;">
+                                                Direct Reactivity 
+                                            </Checkbox>
+                                            <Row gutter=12>
+                                                <Col span="12">
+                                                    <Select type="text" 
+                                                        size="small"
+                                                        @input="ocularTextChanged($event, 'direct_reactivity', 'right_eye')"
+                                                        class="input-class"
+                                                        :disabled="!medicalReportForm.direct_reactivity.tested"
+                                                        placeholder="Right Eye">
+                                                        <Option value="poor">POOR</Option>
+                                                        <Option value="good">GOOD</Option>
+                                                    </Select>
+                                                </Col>
+                                                <Col span="12">
+                                                    <Select type="text" 
+                                                        size="small"
+                                                        :disabled="!medicalReportForm.direct_reactivity.tested"
+                                                        @input="ocularTextChanged($event, 'direct_reactivity', 'left_eye')"
+                                                        class="input-class"
+                                                        placeholder="Left Eye">
+                                                        <Option value="poor">POOR</Option>
+                                                        <Option value="good">GOOD</Option>
+                                                    </Select>
+                                                </Col>
+                                            </Row>
+                                            <Checkbox v-model="medicalReportForm.consensual_reactivity.tested"
+                                                      style="margin-bottom: 5px;">
+                                                Consensual Reactivity
+                                            </Checkbox>
+                                            <Row gutter=12>
+                                                <Col span="12">
+                                                    <Select type="text" 
+                                                        size="small"
+                                                        @input="ocularTextChanged($event, 'consensual_reactivity', 'right_eye')"
+                                                        class="input-class"
+                                                        :disabled="!medicalReportForm.consensual_reactivity.tested"
+                                                        placeholder="Right Eye">
+                                                        <Option value="poor">POOR</Option>
+                                                        <Option value="good">GOOD</Option>
+                                                    </Select>
+                                                </Col>
+                                                <Col span="12">
+                                                    <Select type="text" 
+                                                        size="small"
+                                                        @input="ocularTextChanged($event, 'consensual_reactivity', 'left_eye')"
+                                                        class="input-class"
+                                                        :disabled="!medicalReportForm.consensual_reactivity.tested"
+                                                        placeholder="Left Eye">
+                                                        <Option value="poor">POOR</Option>
+                                                        <Option value="good">GOOD</Option>
+                                                    </Select>
+                                                </Col>
+                                            </Row>
+                                        </div>
+                                    </Col>
+                                    <Col span="12">
+                                        <Divider orientation="center" class="form-group-divider" size="small">Confrontational Visual Fields</Divider>
+                                            <div style="margin-left: 30px; margin-right: 20px;">
+                                            <Checkbox v-model="medicalReportForm.visual_fields_right.tested"
+                                                      style="margin-bottom: 5px;">
+                                                Right Visual Fields
+                                            </Checkbox>
+                                            <Row gutter=12>
+                                                <Col span="12">
+                                                    <Select type="text" 
+                                                        size="small"
+                                                        @input="ocularTextChanged($event, 'visual_fields_right', 'q1')"
+                                                        :disabled="!medicalReportForm.visual_fields_right.tested"
+                                                        class="input-class"
+                                                        placeholder="Q 1">
+                                                        <Option value="poor">POOR</Option>
+                                                        <Option value="good">GOOD</Option>
+                                                    </Select>
+                                                </Col>
+                                                <Col span="12">
+                                                    <Select type="text" 
+                                                        size="small"
+                                                        @input="ocularTextChanged($event, 'visual_fields_right', 'q2')"
+                                                        :disabled="!medicalReportForm.visual_fields_right.tested"
+                                                        class="input-class"
+                                                        placeholder="Q 2">
+                                                        <Option value="poor">POOR</Option>
+                                                        <Option value="good">GOOD</Option>
+                                                    </Select>
+                                                </Col>
+                                            </Row>
+                                            <Row gutter=12>
+                                                <Col span="12">
+                                                    <Select type="text" 
+                                                        size="small"
+                                                        @input="ocularTextChanged($event, 'visual_fields_right', 'q4')"
+                                                        :disabled="!medicalReportForm.visual_fields_right.tested"
+                                                        class="input-class"
+                                                        placeholder="Q 4">
+                                                        <Option value="poor">POOR</Option>
+                                                        <Option value="good">GOOD</Option>
+                                                    </Select>
+                                                </Col>
+                                                <Col span="12">
+                                                    <Select type="text" 
+                                                        size="small"
+                                                        @input="ocularTextChanged($event, 'visual_fields_right', 'q3')"
+                                                        :disabled="!medicalReportForm.visual_fields_right.tested"
+                                                        class="input-class"
+                                                        placeholder="Q 3">
+                                                        <Option value="poor">POOR</Option>
+                                                        <Option value="good">GOOD</Option>
+                                                    </Select>
+                                                </Col>
+                                            </Row>
 
-                                    <FormItem prop="chief_complaint" label="Pupil Diameter (Lit Conditions)">
-                                        <Checkbox v-model="medicalReportForm.pupil_diameter.light.tested" style="float:right;"></Checkbox>
-                                        <Row gutter=12>
-                                            <Col span="12">
-                                                <Input type="text" 
-                                                    size="small"
-                                                    @input="setPupilDiameter($event, 'light', 'right_eye')"
-                                                    :disabled="!medicalReportForm.pupil_diameter.light.tested">
-                                                    <span slot="prepend">RE</span>
-                                                    <span slot="append">mm</span>
-                                                </Input>
-                                            </Col>
-                                            <Col span="12">
-                                                <Input type="text" 
-                                                    size="small"
-                                                    @input="setPupilDiameter($event, 'light', 'left_eye')"
-                                                    :disabled="!medicalReportForm.pupil_diameter.light.tested">
-                                                    <span slot="prepend">LE</span>
-                                                    <span slot="append">mm</span>
-                                                </Input>
-                                            </Col>
-                                        </Row>
-                                    </FormItem>
-
-                                    <FormItem prop="chief_complaint" label="Direct Reactivity to Light">
-                                        <Checkbox v-model="medicalReportForm.direct_reactivity.tested" style="float:right;"></Checkbox>
-                                        <Row gutter=12>
-                                            <Col span="12">
-                                                <Select type="text" 
-                                                    size="small"
-                                                    @input="ocularTextChanged($event, 'direct_reactivity', 'right_eye')"
-                                                    :disabled="!medicalReportForm.direct_reactivity.tested"
-                                                    placeholder="Right Eye">
-                                                    <Option value="poor">POOR</Option>
-                                                    <Option value="good">GOOD</Option>
-                                                </Select>
-                                            </Col>
-                                            <Col span="12">
-                                                <Select type="text" 
-                                                    size="small"
-                                                    :disabled="!medicalReportForm.direct_reactivity.tested"
-                                                    @input="ocularTextChanged($event, 'direct_reactivity', 'left_eye')"
-                                                    placeholder="Left Eye">
-                                                    <Option value="poor">POOR</Option>
-                                                    <Option value="good">GOOD</Option>
-                                                </Select>
-                                            </Col>
-                                        </Row>
-                                    </FormItem>
-                                    <FormItem prop="chief_complaint" label="Consensual Reactivity to Light ">
-                                        <Checkbox v-model="medicalReportForm.consensual_reactivity.tested" style="float:right;"></Checkbox>
-                                        <Row gutter=12>
-                                            <Col span="12">
-                                                <Select type="text" 
-                                                    size="small"
-                                                    @input="ocularTextChanged($event, 'consensual_reactivity', 'right_eye')"
-                                                    :disabled="!medicalReportForm.consensual_reactivity.tested"
-                                                    placeholder="Right Eye">
-                                                    <Option value="poor">POOR</Option>
-                                                    <Option value="good">GOOD</Option>
-                                                </Select>
-                                            </Col>
-                                            <Col span="12">
-                                                <Select type="text" 
-                                                    size="small"
-                                                    @input="ocularTextChanged($event, 'consensual_reactivity', 'left_eye')"
-                                                    :disabled="!medicalReportForm.consensual_reactivity.tested"
-                                                    placeholder="Left Eye">
-                                                    <Option value="poor">POOR</Option>
-                                                    <Option value="good">GOOD</Option>
-                                                </Select>
-                                            </Col>
-                                        </Row>
-                                    </FormItem>
-                                </Col>
-                                <Col span="6">
-                                    <Divider orientation="right" size="small" class="form-group-divider">Confrontational Visual Fields</Divider>
-                                    <FormItem prop="employment_activities" label="Right Eye Visual Fields">
-                                        <Checkbox v-model="medicalReportForm.visual_fields_right.tested" style="float:right;"></Checkbox>
-                                        <Row gutter=12>
-                                            <Col span="12">
-                                                <Select type="text" 
-                                                    size="small"
-                                                    @input="ocularTextChanged($event, 'visual_fields_right', 'q1')"
-                                                    :disabled="!medicalReportForm.visual_fields_right.tested"
-                                                    placeholder="Q 1">
-                                                    <Option value="poor">POOR</Option>
-                                                    <Option value="good">GOOD</Option>
-                                                </Select>
-                                            </Col>
-                                            <Col span="12">
-                                                <Select type="text" 
-                                                    size="small"
-                                                    @input="ocularTextChanged($event, 'visual_fields_right', 'q2')"
-                                                    :disabled="!medicalReportForm.visual_fields_right.tested"
-                                                    placeholder="Q 2">
-                                                    <Option value="poor">POOR</Option>
-                                                    <Option value="good">GOOD</Option>
-                                                </Select>
-                                            </Col>
-                                        </Row>
-                                        <Row gutter=12>
-                                            <Col span="12">
-                                                <Select type="text" 
-                                                    size="small"
-                                                    @input="ocularTextChanged($event, 'visual_fields_right', 'q4')"
-                                                    :disabled="!medicalReportForm.visual_fields_right.tested"
-                                                    placeholder="Q 4">
-                                                    <Option value="poor">POOR</Option>
-                                                    <Option value="good">GOOD</Option>
-                                                </Select>
-                                            </Col>
-                                            <Col span="12">
-                                                <Select type="text" 
-                                                    size="small"
-                                                    @input="ocularTextChanged($event, 'visual_fields_right', 'q3')"
-                                                    :disabled="!medicalReportForm.visual_fields_right.tested"
-                                                    placeholder="Q 3">
-                                                    <Option value="poor">POOR</Option>
-                                                    <Option value="good">GOOD</Option>
-                                                </Select>
-                                            </Col>
-                                        </Row>
-                                    </FormItem>
-
-                                    <FormItem prop="employment_activities" label="Left Eye Visual Fields">
-                                        <Checkbox v-model="medicalReportForm.visual_fields_left.tested" style="float:right;"></Checkbox>
-                                        <Row gutter=12>
-                                            <Col span="12">
-                                                <Select type="text" 
-                                                    size="small"
-                                                    @input="ocularTextChanged($event, 'visual_fields_left', 'q1')"
-                                                    :disabled="!medicalReportForm.visual_fields_left.tested"
-                                                    placeholder="Q 1">
-                                                    <Option value="poor">POOR</Option>
-                                                    <Option value="good">GOOD</Option>
-                                                </Select>
-                                            </Col>
-                                            <Col span="12">
-                                                <Select type="text" 
-                                                    size="small"
-                                                    @input="ocularTextChanged($event, 'visual_fields_left', 'q2')"
-                                                    :disabled="!medicalReportForm.visual_fields_left.tested"
-                                                    placeholder="Q 2">
-                                                    <Option value="poor">POOR</Option>
-                                                    <Option value="good">GOOD</Option>
-                                                </Select>
-                                            </Col>
-                                        </Row>
-                                        <Row gutter=12>
-                                            <Col span="12">
-                                                <Select type="text" 
-                                                    size="small"
-                                                    @input="ocularTextChanged($event, 'visual_fields_left', 'q4')"
-                                                    :disabled="!medicalReportForm.visual_fields_left.tested"
-                                                    placeholder="Q 4">
-                                                    <Option value="poor">POOR</Option>
-                                                    <Option value="good">GOOD</Option>
-                                                </Select>
-                                            </Col>
-                                            <Col span="12">
-                                                <Select type="text" 
-                                                    size="small"
-                                                    @input="ocularTextChanged($event, 'visual_fields_left', 'q3')"
-                                                    :disabled="!medicalReportForm.visual_fields_left.tested"
-                                                    placeholder="Q 3">
-                                                    <Option value="poor">POOR</Option>
-                                                    <Option value="good">GOOD</Option>
-                                                </Select>
-                                            </Col>
-                                        </Row>
-                                    </FormItem>
+                                            <Checkbox v-model="medicalReportForm.visual_fields_left.tested"
+                                                      style="margin-bottom: 5px;">
+                                                Left Visual Fields
+                                            </Checkbox>
+                                            <Row gutter=12>
+                                                <Col span="12">
+                                                    <Select type="text" 
+                                                        size="small"
+                                                        @input="ocularTextChanged($event, 'visual_fields_left', 'q1')"
+                                                        :disabled="!medicalReportForm.visual_fields_left.tested"
+                                                        class="input-class"
+                                                        placeholder="Q 1">
+                                                        <Option value="poor">POOR</Option>
+                                                        <Option value="good">GOOD</Option>
+                                                    </Select>
+                                                </Col>
+                                                <Col span="12">
+                                                    <Select type="text" 
+                                                        size="small"
+                                                        @input="ocularTextChanged($event, 'visual_fields_left', 'q2')"
+                                                        :disabled="!medicalReportForm.visual_fields_left.tested"
+                                                        class="input-class"
+                                                        placeholder="Q 2">
+                                                        <Option value="poor">POOR</Option>
+                                                        <Option value="good">GOOD</Option>
+                                                    </Select>
+                                                </Col>
+                                            </Row>
+                                            <Row gutter=12>
+                                                <Col span="12">
+                                                    <Select type="text" 
+                                                        size="small"
+                                                        @input="ocularTextChanged($event, 'visual_fields_left', 'q4')"
+                                                        :disabled="!medicalReportForm.visual_fields_left.tested"
+                                                        class="input-class"
+                                                        placeholder="Q 4">
+                                                        <Option value="poor">POOR</Option>
+                                                        <Option value="good">GOOD</Option>
+                                                    </Select>
+                                                </Col>
+                                                <Col span="12">
+                                                    <Select type="text" 
+                                                        size="small"
+                                                        @input="ocularTextChanged($event, 'visual_fields_left', 'q3')"
+                                                        :disabled="!medicalReportForm.visual_fields_left.tested"
+                                                        class="input-class"
+                                                        placeholder="Q 3">
+                                                        <Option value="poor">POOR</Option>
+                                                        <Option value="good">GOOD</Option>
+                                                    </Select>
+                                                </Col>
+                                            </Row>
+                                        </div>
 
 
-                                    <Divider orientation="right" size="small" class="form-group-divider">Tonometry</Divider>
-                                    <FormItem prop="current_medication" label="Intraocular Pressure (mmHg)"
-                                               @on-form-blur="textChanged">
-                                        <Checkbox v-model="medicalReportForm.intraocular_pressure.tested" style="float:right;"></Checkbox>
-                                        <Row gutter=12>
-                                            <Col span="12">
-                                                <Input type="number" 
-                                                    @input="ocularTextChanged($event, 'intraocular_pressure', 'right_eye')"
-                                                    size="small"
-                                                    :disabled="!medicalReportForm.intraocular_pressure.tested">
-                                                    <span slot="prepend">RE</span>
-                                                </Input>
-                                            </Col>
-                                            <Col span="12">
-                                                <Input type="number" 
-                                                    @input="ocularTextChanged($event, 'intraocular_pressure', 'left_eye')"
-                                                    size="small"
-                                                    :disabled="!medicalReportForm.intraocular_pressure.tested">
-                                                    <span slot="prepend">LE</span>
-                                                </Input>
-                                            </Col>
-                                        </Row>
-                                    </FormItem>
-                                </Col>
-                            </Row>
-                        </Form>
+                                        <Divider orientation="center" size="small" class="form-group-divider">Tonometry</Divider>
+                                            <div style="margin-left: 30px; margin-right: 20px;">
+                                            <Checkbox v-model="medicalReportForm.intraocular_pressure.tested"
+                                                      style="margin-bottom: 5px;">Intraocular Pressure (mmHg)</Checkbox>
+                                            <Row gutter=12>
+                                                <Col span="12">
+                                                    <Input type="number" 
+                                                        @input="ocularTextChanged($event, 'intraocular_pressure', 'right_eye')"
+                                                        size="small"
+                                                        class="input-class"
+                                                        :disabled="!medicalReportForm.intraocular_pressure.tested">
+                                                        <span slot="prepend">RE</span>
+                                                    </Input>
+                                                </Col>
+                                                <Col span="12">
+                                                    <Input type="number" 
+                                                        @input="ocularTextChanged($event, 'intraocular_pressure', 'left_eye')"
+                                                        size="small"
+                                                        class="input-class"
+                                                        :disabled="!medicalReportForm.intraocular_pressure.tested">
+                                                        <span slot="prepend">LE</span>
+                                                    </Input>
+                                                </Col>
+                                            </Row>
+                                            </div>
+                                    </Col> 
+                                </Row>
+                            </Col> 
+                            <Col span="4">
+                                <div id="pager-button-group">
+                                    <div class="button-group-text" v-bind:class="{active: isTop}">
+                                        <p>Visual Acuity</p>
+                                        <p>Refraction</p>
+                                    </div>
+
+                                    <ButtonGroup vertical size="large">
+                                        <Button icon="ios-arrow-up" 
+                                                class="pager-button"
+                                                v-bind:class="{active: isTop}"
+                                                @click="isTop=true"></Button>
+                                        <Button icon="ios-arrow-down" 
+                                                class="pager-button"
+                                                v-bind:class="{active: !isTop}"
+                                                @click="isTop=false"></Button>
+                                    </ButtonGroup> 
+                                    <div class="button-group-text" v-bind:class="{active: !isTop}">
+                                        <p>Pupillometry</p>
+                                        <p>Visual Fields</p>
+                                        <p>Tonometry</p>
+                                    </div>
+                                </div>
+                            </Col>
+                        </Row>
                     </TabPane>
                     <TabPane label="Assessment" name="name3">
                         <Form>
                             <Row gutter=12>
                                 <Col span="16">
-                                    <Divider orientation="right" size="small" class="form-group-divider">Physician's Assessment</Divider>
+                                    <Divider orientation="center" class="form-group-divider">Physician's Assessment</Divider>
                                     <FormItem label="" style="margin-top: 10px;"
                                                @on-form-blur="textChanged($event, 'assessment')">
                                         <Input type="textarea"
@@ -650,7 +703,7 @@
                                 </Col>
 
                                 <Col span="8" style="height: 50vh;">
-                                    <Divider orientation="right" size="small" class="form-group-divider">Diagnostics Documents</Divider>
+                                    <Divider orientation="center" class="form-group-divider">Diagnostics Documents</Divider>
                                         <div 
                                             class="diagnostic-container"
                                             v-for="item in diagnostic_data" 
@@ -674,7 +727,7 @@
                         <Form>
                             <Row gutter="12">
                                 <Col span="16">
-                                    <Divider orientation="right" size="small" class="form-group-divider">Physician's Plan</Divider>
+                                    <Divider orientation="center" class="form-group-divider">Physician's Plan</Divider>
                                     <FormItem label="" style="margin-top: 10px;"
                                                @on-form-blur="textChanged($event, 'plan')">
                                         <Input type="textarea"
@@ -686,7 +739,7 @@
                                 </Col>
 
                                 <Col span="8" style="height: 50vh;">
-                                    <Divider orientation="right" size="small" class="form-group-divider">Medication/ Prescriptions</Divider>
+                                    <Divider orientation="center" class="form-group-divider">Medication/ Prescriptions</Divider>
                                         <FormItem label="" style="margin-top: 10px;"
                                                @on-form-blur="textChanged($event, 'prescription')">
                                             <Input type="textarea"
@@ -695,7 +748,7 @@
                                             </Input>
                                         </FormItem>
 
-                                    <Divider orientation="right" size="small" class="form-group-divider">Review</Divider>
+                                    <Divider orientation="center" class="form-group-divider">Review</Divider>
                                         <FormItem style="margin-top: 10px;"
                                                @on-form-blur="textChanged($event, 'review_date')">
                                             <DatePicker 
@@ -785,6 +838,7 @@
                 diag_index: 0,
 
                 iconColor: "#ababab",
+                isTop: true,
 
 
                 medicalReportForm: {
@@ -940,7 +994,7 @@
 
                 this.$store.dispatch('report/create', this.medicalReportForm)
                            .then((result) => {
-                               let queue = this.$store.getters['queue/mapPatientIDtoQueue'](result.patient);
+                               let queue = this.$store.getters['queue/mapPatientIDtoQueue'](result.patient.id);
                                console.log(queue);
                                this.loading = false;
                                this.modal_active = false;
@@ -991,6 +1045,42 @@
 
     .diagnostic-container {
         margin: 10px 5px 10px 5px;
+    }
+
+    .scrollable-column {
+        overflow-y: scroll;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .scrollable-column::-webkit-scrollbar {
+        display: none;
+    }
+
+    .input-class {
+        /* width: 200px; */
+        margin-bottom: 20px;
+    }
+
+    .medical-report-modal {
+        max-height: 100px;
+    }
+
+    #pager-button-group {
+        position: absolute;
+        left: 30%;
+        text-align: center;
+        top: 100px;
+    }
+
+    .button-group-text {
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .active {
+        border-color: #4f8961;
+        color: #4f8961;
     }
 
 </style>

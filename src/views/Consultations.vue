@@ -162,6 +162,12 @@ export default {
       margin-top: 50px;
       display: flex;
       overflow-x: scroll;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    #consultation-queue-container::-webkit-scrollbar {
+      display: none;
     }
 
     .section-header-text {

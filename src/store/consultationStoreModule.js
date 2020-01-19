@@ -27,7 +27,6 @@ export default {
     },
     // -----------------------------------------------------------------
     mutations: {
-        // stuff to set todos data locally
         setQueue: (state, patients) => {
             Vue.set(state, 'queue', patients);
         },
