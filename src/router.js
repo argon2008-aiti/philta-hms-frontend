@@ -56,6 +56,7 @@ let router = new Router({
                 requiresAuth: true
             },
             component: Consultations,
+            props: true
         },
 
         {
