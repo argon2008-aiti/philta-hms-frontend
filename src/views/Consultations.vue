@@ -25,6 +25,33 @@
         <Col span="16">
             <p class="section-header-text">CONSULTATION HISTORY</p>
             <Card dis-hover style="min-height:80vh">
+              <div slot="title" style="margin-top: 20px;">
+                <Row gutter=8>
+                   <Col span="6" id="report-date-title">{{report_date.format("dddd, Do MMM., YYYY")}}</Col>
+                   <Col span="10">
+                      <Input></Input>
+                   </Col>
+                   <Col span="2"><div style="width: 100%; height: 50px;"></div></Col> 
+                   <Col span="4">
+                      <DatePicker type="date" 
+                                  @on-change="reportDateChanged"
+                                  :options="date_picker_options"
+                                  placeholder="Go to Date">
+                      </DatePicker>
+                   </Col>
+                </Row>
+              </div>
+              <div slot="extra" style="margin-top: 20px;">
+                <ButtonGroup class="pager-button-group">
+                    <Button icon="ios-arrow-back" 
+                          class="pager-button"
+                          :disabled="reportDateForwardLimit"
+                          @click="forwardReportDate"></Button>
+                    <Button icon="ios-arrow-forward" 
+                          class="pager-button"
+                          @click="backtrackReportDate"></Button>
+                </ButtonGroup> 
+              </div>
               <div class="page-contents">
                 <div v-if="allReports.length > 0">
                   <MedicalReportItem v-for="report in allReports" :report="report" :key="report.id">
@@ -45,8 +72,8 @@
             <Card dis-hover style="min-height:30vh">
               <div class="page-contents">
                 <div v-if="reportsToday.length > 0">
-                  <MedicalReportItemToday v-for="report in reportsToday" :report="report" :key="report.id">
-                  </MedicalReportItemToday>
+                  <MedicalReportItem v-for="report in reportsToday" :report="report" :key="report.id">
+                  </MedicalReportItem>
                 </div>
                 <div v-else 
                         style="text-align: center; 
@@ -67,20 +94,25 @@ import Vue from 'vue'
 import PatientVitalsModal from '@/components/PatientVitalsModal.vue'
 import MedicalReportModal from '@/components/MedicalReportModal.vue'
 import MedicalReportItem from '@/components/MedicalReportItem.vue'
-import MedicalReportItemToday from '@/components/MedicalReportItemToday.vue'
 import store from '../store/index'
 import QueuedPatient from '@/components/QueuedPatient.vue'
 import NoDataView from '@/components/NoDataView.vue'
+import moment from 'moment'
 export default {
         props: ["id"],
         components: {'QueuedPatient': QueuedPatient, 
                      'MedicalReportItem': MedicalReportItem,
-                     'MedicalReportItemToday': MedicalReportItemToday,
                      'NoDataView': NoDataView,
                      },
         data() {
             return {
-              vitalsModal: null
+              vitalsModal: null,
+              report_date: moment().subtract(1, 'days'),
+              date_picker_options: {
+                    disabledDate (date) {
+                      return moment().isSameOrBefore(moment(date), 'days');
+                    }
+                },
             }
         },
 
@@ -106,6 +138,36 @@ export default {
                 this.$refs.container.appendChild(this.medicalReportModal.$el)
             },
 
+            forwardReportDate() {
+              if(!this.reportDateForwardLimit) {
+                 this.report_date = moment(this.report_date).add(1, 'days')
+              }
+
+            },
+
+            backtrackReportDate() {
+              this.report_date = moment(this.report_date).subtract(1, 'days');
+            },
+
+            reportDateChanged(new_date) {
+              if(new_date) {
+                  if(this.validReportDate(moment(new_date))) {
+                     this.report_date = moment(new_date);
+                  }
+
+                  else {
+                    this.$Notice.error({
+                      title: 'Invalid Date ' + new_date,
+                      desc:'Date provided must be in the past!'
+                    });
+                  }
+              }
+            },
+
+            validReportDate(date) {
+                return moment(date).isBefore(moment(), "days");
+            }
+
         },
 
         computed: {
@@ -119,12 +181,25 @@ export default {
              },
 
              allReports() {
-                  return this.$store.getters['report/all'];
+                  return this.$store.getters['report/all'](this.report_date);
              },
 
              reportsToday() {
-                  return this.$store.getters['report/reportsToday'];
+                  let reports = this.$store.getters['report/reportsToday'];
+                  return reports.reverse();
              },
+
+             currentReportDate() {
+               return this.report_date;
+             },
+
+             reportDateForwardLimit() {
+                  let date_limit = moment(this.report_date);
+                  return !this.validReportDate(date_limit.add(1, 'days'));
+                  // let today = moment();
+                  // let difference = moment.duration(today.diff(this.report_date)).asDays();
+                  // return Math.floor(difference) <= 1;
+             }
 
         },
 
@@ -174,4 +249,10 @@ export default {
       margin-bottom: 5px;
     }
 
+    #report-date-title {
+      font-size: 14px;
+      font-weight: 400;
+      margin-top: 10px;
+      letter-spacing: 0.5px;
+    }
 </style>

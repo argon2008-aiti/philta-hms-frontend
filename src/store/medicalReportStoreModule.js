@@ -10,8 +10,10 @@ export default {
     },
     // -----------------------------------------------------------------
     getters: {
-        all: state => {
-            return state.reports.reverse();
+        all: state => date => {
+            return state.reports.filter(report => {
+                return date.isSame(report.created_at, 'day');
+            });
         },
 
         reportsToday: state => {

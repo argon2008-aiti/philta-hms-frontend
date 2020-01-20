@@ -1,23 +1,25 @@
 <template>
-    <div style="height: 40px; position: relative; margin-bottom: 20px;">
-        <Avatar :style="avatarStyle()">{{report.patient.first_name[0]}}</Avatar>
-        <div style="position: absolute; top: 0px; left: 50px;">
-            {{report.patient.full_name }}
+    <div class="medical-report-container">
+        <div class="report-wrapper">
+            <Avatar :style="avatarStyle()">{{report.patient.first_name[0]}}</Avatar>
+            <div style="position: absolute; top: 0px; left: 50px;">
+                {{report.patient.full_name }}
+            </div>
+            <div style="position: absolute; bottom: 0px; left: 50px;" class="patient-id">
+                {{report.patient.phone_number }}
+            </div>
+            <div style="position: absolute; bottom: 0px; right: 0px;" class="patient-id">
+                {{getTime(report.created_at)}}
+            </div>
+            <!--
+            <div style="position: absolute; top: 0px; right: 10px;" 
+                 class="patient-id"
+                 v-if="report.patient.insurance_policy.provider">
+                 <Badge color="blue"/>
+            </div>
+            -->
         </div>
-        <div style="position: absolute; bottom: 0px; left: 50px;" class="patient-id">
-            {{report.patient.phone_number }}
         </div>
-        <div style="position: absolute; bottom: 0px; right: 20px;" class="patient-id">
-            {{report.created_at | formatDate}} @ {{getTime(report.created_at)}}
-        </div>
-        <!--
-        <div style="position: absolute; top: 0px; right: 10px;" 
-             class="patient-id"
-             v-if="report.patient.insurance_policy.provider">
-             <Badge color="blue"/>
-        </div>
-        -->
-    </div>
 </template>
 
 <script>
@@ -44,7 +46,7 @@ import randomcolor from 'randomcolor';
                 return {
                 'background': randomcolor({ luminosity: 'dark' }),
                 'font-size': font_size,
-                'margin-top': '4px'
+                'top': '4px'
                 }
             }, 
 
@@ -73,4 +75,19 @@ import randomcolor from 'randomcolor';
     font-size: 12px;
     color: #777;
 }
+
+.medical-report-container {
+    padding: 10px;
+}
+
+.medical-report-container:hover {
+    background: #c7edce;
+    cursor: pointer;
+}
+
+.report-wrapper {
+    position: relative;
+    height: 40px;
+}
+
 </style>

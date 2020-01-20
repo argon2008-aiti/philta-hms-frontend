@@ -7,14 +7,14 @@
         <div style="position: absolute; bottom: 0px; left: 50px;" class="patient-id">
             {{report.patient.phone_number }}
         </div>
-        <div style="position: absolute; bottom: 0px; right: 10px;" class="patient-id">
+        <div style="position: absolute; bottom: 0px; right: 10px;" class="patient-seen-time patient-id">
             {{getTime(report.created_at)}}
         </div>
-        <div style="position: absolute; top: 0px; right: 10px;" 
+        <!-- <div style="position: absolute; top: 0px; right: 10px;" 
              class="patient-id"
              v-if="report.patient.insurance_policy.provider">
              <Badge color="blue"/>
-        </div>
+        </div> -->
     </div>
 </template>
 
@@ -57,5 +57,9 @@ import randomcolor from 'randomcolor';
 .patient-id {
     font-size: 12px;
     color: #777;
+}
+
+.patient-seen-time {
+    font-style: italic;
 }
 </style>
