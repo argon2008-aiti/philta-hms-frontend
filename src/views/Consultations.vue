@@ -27,12 +27,13 @@
             <Card dis-hover style="min-height:80vh">
               <div slot="title" style="margin-top: 20px;">
                 <Row gutter=8>
-                   <Col span="6" id="report-date-title">{{report_date.format("dddd, Do MMM., YYYY")}}</Col>
-                   <Col span="10">
+                   <Col :lg="8" :xs="24" :md="12" id="report-date-title">
+                        {{report_date.format("dddd, Do MMM., YYYY")}}
+                   </Col>
+                   <Col :lg="8" :xs="24" :md="12">
                       <Input></Input>
                    </Col>
-                   <Col span="2"><div style="width: 100%; height: 50px;"></div></Col> 
-                   <Col span="4">
+                   <Col :lg="{span:4, offset:1}" :xs="24" :md="12">
                       <DatePicker type="date" 
                                   @on-change="reportDateChanged"
                                   :options="date_picker_options"
