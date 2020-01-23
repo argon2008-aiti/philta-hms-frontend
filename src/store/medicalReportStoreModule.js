@@ -16,6 +16,10 @@ export default {
             });
         },
 
+        allRaw: state => {
+            return state.reports;
+        },
+
         reportsToday: state => {
             return state.reports.filter(report => {
                 return isToday(new Date(report.created_at));

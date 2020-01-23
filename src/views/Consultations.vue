@@ -25,13 +25,26 @@
         <Col span="16">
             <p class="section-header-text">CONSULTATION HISTORY</p>
             <Card dis-hover style="min-height:80vh">
-              <div slot="title" style="margin-top: 20px;">
+              <div slot="title" style="margin-top: 0px;">
                 <Row gutter=8>
                    <Col :lg="8" :xs="24" :md="12" id="report-date-title">
                         {{report_date.format("dddd, Do MMM., YYYY")}}
                    </Col>
                    <Col :lg="8" :xs="24" :md="12">
-                      <Input></Input>
+                      <AutoComplete 
+                            :v-model="current_search"
+                            placeholder="Search Reports [Patient Name or ID]" 
+                            @on-search="searchReport"
+                            @on-select="reportSelected"
+                            :clearable="true"
+                            icon="ios-search">
+
+                            <Option v-for="option in filteredReports" :value="option._id" :key="option._id" style="min-width: 350px;">
+                                <Avatar :style="avatarStyle(option.patient.avatarColor)">{{option.patient.first_name[0]}}</Avatar>
+                                <span>{{option.patient.full_name}}</span>
+                                <span class="report-date-option">{{formatDate(option.created_at)}}</span>
+                            </Option>
+                      </AutoComplete>
                    </Col>
                    <Col :lg="{span:4, offset:1}" :xs="24" :md="12">
                       <DatePicker type="date" 
@@ -42,7 +55,7 @@
                    </Col>
                 </Row>
               </div>
-              <div slot="extra" style="margin-top: 20px;">
+              <div slot="extra" style="margin-top: 0px;">
                 <ButtonGroup class="pager-button-group">
                     <Button icon="ios-arrow-back" 
                           class="pager-button"
@@ -99,6 +112,7 @@ import store from '../store/index'
 import QueuedPatient from '@/components/QueuedPatient.vue'
 import NoDataView from '@/components/NoDataView.vue'
 import moment from 'moment'
+import randomcolor from 'randomcolor';
 export default {
         props: ["id"],
         components: {'QueuedPatient': QueuedPatient, 
@@ -114,6 +128,7 @@ export default {
                       return moment().isSameOrBefore(moment(date), 'days');
                     }
                 },
+              filteredReports: []
             }
         },
 
@@ -167,6 +182,24 @@ export default {
 
             validReportDate(date) {
                 return moment(date).isBefore(moment(), "days");
+            },
+
+            searchReport: function(query) {
+              this.filteredReports =  this.allReportsRaw.filter(report => {
+                return report.patient.full_name.toUpperCase().indexOf(query.toUpperCase()) !== -1;
+              });
+            },
+
+            avatarStyle: function() {
+                return {
+                'background': randomcolor({ luminosity: 'dark' }),
+                'margin-right': '15px',
+                'text-align' : 'center'
+                }
+            }, 
+
+            formatDate(date) {
+              return moment(date).format("Do MMM., YYYY");
             }
 
         },
@@ -183,6 +216,10 @@ export default {
 
              allReports() {
                   return this.$store.getters['report/all'](this.report_date);
+             },
+
+             allReportsRaw() {
+                  return this.$store.getters['report/allRaw'];
              },
 
              reportsToday() {
@@ -255,5 +292,10 @@ export default {
       font-weight: 400;
       margin-top: 10px;
       letter-spacing: 0.5px;
+    }
+
+    .report-date-option {
+      margin-top: 7px;
+      float: right;
     }
 </style>
