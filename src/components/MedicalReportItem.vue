@@ -1,5 +1,5 @@
 <template>
-    <div class="medical-report-container">
+    <div class="medical-report-container" @click="$emit('reportClick', report)">
         <div class="report-wrapper">
             <Avatar :style="avatarStyle()">{{report.patient.first_name[0]}}</Avatar>
             <div style="position: absolute; top: 0px; left: 50px;">

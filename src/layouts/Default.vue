@@ -87,7 +87,6 @@ export default {
     }
 
     .section-card {
-        margin-left: 10px;
         margin-top: 5px;
     }
 </style>

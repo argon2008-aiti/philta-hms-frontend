@@ -45,7 +45,7 @@
                 <div class="profile-image-container">
                     <Icon type="ios-person-outline" size=72 color="#ddd"></Icon>
                 </div>
-                <p class="account-name">{{currentUser.full_name}}</p>
+                <p class="account-name capitalize">{{currentUser.full_name}}</p>
                 <span class="badge-span account-role" style="margin-top: 5px;">{{currentUser.role}}</span>
                 <div class="account-button-group">
                     <Button @click="">
@@ -73,7 +73,7 @@ export default {
     },
 
     created: function() {
-        this.active_item = this.$router.currentRoute.name;
+        this.active_item = this.$router.currentRoute.meta.name;
     },
     
     computed: {
@@ -109,7 +109,7 @@ export default {
 
     watch: {
         $route(to, from) {
-            this.active_item = to.name;
+            this.active_item = to.meta.name;
         }
     }
 }
@@ -184,4 +184,10 @@ export default {
     .notice-badge {
         float: right;
     }
+</style>
+
+<style>
+   .capitalize {
+       text-transform: capitalize;
+   }
 </style>

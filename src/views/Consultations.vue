@@ -39,7 +39,7 @@
                             :clearable="true"
                             icon="ios-search">
 
-                            <Option v-for="option in filteredReports" :value="option._id" :key="option._id" style="min-width: 350px;">
+                            <Option v-for="option in filteredReports" :value="option" :key="option._id" style="min-width: 350px;">
                                 <Avatar :style="avatarStyle(option.patient.avatarColor)">{{option.patient.first_name[0]}}</Avatar>
                                 <span>{{option.patient.full_name}}</span>
                                 <span class="report-date-option">{{formatDate(option.created_at)}}</span>
@@ -68,7 +68,7 @@
               </div>
               <div class="page-contents">
                 <div v-if="allReports.length > 0">
-                  <MedicalReportItem v-for="report in allReports" :report="report" :key="report.id">
+                  <MedicalReportItem v-for="report in allReports" :report="report" :key="report.id" @reportClick="reportSelected">
                   </MedicalReportItem>
                 </div>
                 <div v-else 
@@ -86,7 +86,7 @@
             <Card dis-hover style="min-height:30vh">
               <div class="page-contents">
                 <div v-if="reportsToday.length > 0">
-                  <MedicalReportItem v-for="report in reportsToday" :report="report" :key="report.id">
+                  <MedicalReportItem v-for="report in reportsToday" :report="report" :key="report.id" @reportClick="reportSelected">
                   </MedicalReportItem>
                 </div>
                 <div v-else 
@@ -200,6 +200,10 @@ export default {
 
             formatDate(date) {
               return moment(date).format("Do MMM., YYYY");
+            },
+
+            reportSelected(report) {
+                this.$router.push({name: 'medical_report_details', params: {'report': report}});
             }
 
         },
@@ -241,9 +245,12 @@ export default {
 
         },
 
+       // Lifecycle hooks
+
         created() {
              this.$store.dispatch('queue/fetch');
         },
+
 
         mounted() {
 

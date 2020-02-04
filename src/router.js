@@ -5,6 +5,7 @@ import Patients from './views/Patients'
 import PatientDetails from './views/PatientDetails'
 import HealthInsurance from './views/HealthInsurance'
 import Consultations from './views/Consultations'
+import MedicalReportDetails from './views/MedicalReportDetails'
 import Bills from './views/Bills'
 import LogIn from './views/LogIn'
 
@@ -16,6 +17,7 @@ let router = new Router({
             name: 'dashboard',
             meta: {
                 display_name: 'Dashboard',
+                name: 'dashboard',
                 requiresAuth: true
             },
             component: Dashboard
@@ -26,6 +28,7 @@ let router = new Router({
             name: 'dashboard',
             meta: {
                 display_name: 'Dashboard',
+                name: 'dashboard',
                 requiresAuth: true
             },
             component: Dashboard
@@ -36,6 +39,7 @@ let router = new Router({
             name: 'patients',
             meta: {
                 display_name: 'Patients',
+                name: 'patients',
                 requiresAuth: true
             },
             component: Patients
@@ -44,6 +48,11 @@ let router = new Router({
         {
             path: '/patients/details/:id',
             name: 'patients',
+            meta: {
+                display_name: 'Patients',
+                name: 'patients',
+                requiresAuth: true
+            },
             component: PatientDetails,
             props: true
         },
@@ -53,9 +62,22 @@ let router = new Router({
             name: 'consultations',
             meta: {
                 display_name: 'Consultations',
+                name: 'consultations',
                 requiresAuth: true
             },
             component: Consultations,
+            props: true
+        },
+
+        {
+            path: '/consultations/report/details/',
+            name: 'medical_report_details',
+            meta: {
+                display_name: 'Medical Report Details',
+                name: 'consultations',
+                requiresAuth: true
+            },
+            component: MedicalReportDetails,
             props: true
         },
 
@@ -64,6 +86,7 @@ let router = new Router({
             name: 'insurance',
             meta: {
                 display_name: 'Health Insurance',
+                name: 'insurance',
                 requiresAuth: true
             },
             component: HealthInsurance
@@ -74,6 +97,7 @@ let router = new Router({
             name: 'billings',
             meta: {
                 display_name: 'Billings',
+                name: 'billings',
                 requiresAuth: true
             },
             component: Bills

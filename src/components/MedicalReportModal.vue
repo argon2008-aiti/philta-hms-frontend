@@ -7,10 +7,16 @@
 
                 <div slot="header">
                     <Row>
-                        <Col span="12">
+                        <Col span="10">
                             <div class="patient-name-title">{{patient_data.patient.full_name}}</div>
                         </Col>
-                        <Col span="12">
+                        <Col span="4">
+                            <div class="patient-age-insurance">
+                                <Icon type="ios-calendar-outline"></Icon>
+                                {{patient_data.patient.date_of_birth | getAge}}
+                             </div>
+                        </Col>
+                        <Col span="10">
                             <div class="vitals-container">
                                 <span class="vitals-wrapper" style="margin-right: 10px;">
                                     <Icon type="ios-heart-outline" size="16" color="#ff4c4c"></Icon>
@@ -32,7 +38,7 @@
 
                 <Tabs value="name1">
                     <TabPane label="Subjective" name="name1">
-                    <Form ref="medicalReportForm" :rules="formValidationRules">
+                    <Form ref="medicalReportForm">
                             <Row :gutter="32">
                             <Col span="8">
                                 <!-- CC --------->
@@ -53,12 +59,12 @@
 
                             <Col span="8">
                                 <!-- HPI --------->
-                                <Divider orientation="center" class="form-group-divider">History of Present Illness (HPI)</Divider>
+                                <Divider orientation="center" size="small" class="form-group-divider">History of Present Illness (HPI)</Divider>
 
                                 <FormItem prop="condition_onset" label="Condition Onset"
                                                @on-form-blur="textChanged($event, 'condition_onset')">
                                     <Input type="text" 
-                                        placeholder="When did the condition begin?">
+                                        placeholder="What do you think brought about the condition?">
                                     </Input>
                                 </FormItem>
 
@@ -94,20 +100,8 @@
                                 </FormItem>
                             </Col>
                             <Col span="8">
-                                <Divider orientation="center" class="form-group-divider">Medical History</Divider>
-                                <FormItem prop="employment_activities" label="Employment/Social Activities">
-                                    <Select 
-                                        filterable
-                                        multiple
-                                        remote
-                                        allow-create
-                                        @on-change="addToArray($event, 'employment_activities')"
-                                        :remote-method="doNothingMethod"
-                                        placeholder="Driving, Reading, Working with machines">
-                                    </Select>
-                                </FormItem>
-
-                                <FormItem prop="chronic_diseases" label="Chronic/Long-term conditions">
+                                <Divider orientation="center" size="small" class="form-group-divider">Medical Profile</Divider>
+                                <FormItem prop="chronic_diseases" label="Chronic / Long-term conditions">
                                     <Select 
                                         filterable
                                         multiple
@@ -142,6 +136,18 @@
                                         placeholder="Have you had any eye surgery before?">
                                     </Select>
                                 </FormItem>
+                                <FormItem prop="employment_activities" label="Nature of Employment / Social Activities">
+                                    <Select 
+                                        filterable
+                                        multiple
+                                        remote
+                                        allow-create
+                                        @on-change="addToArray($event, 'employment_activities')"
+                                        :remote-method="doNothingMethod"
+                                        placeholder="Driving, Reading, Working with machines">
+                                    </Select>
+                                </FormItem>
+
                             </Col>
                         </Row>
                     </Form>
@@ -380,14 +386,14 @@
                                     </Col>
                                    
                                 </Row>
-                                <Row v-show="!isTop">
+                                <Row v-show="!isTop" gutter=16>
                                     <Col span="12" class="scrollable-column">
                                         <Divider orientation="center" class="form-group-divider" size="small">Pupillometry</Divider>
 
                                         <div style="margin-left: 20px; margin-right: 20px;">
                                             <Checkbox v-model="medicalReportForm.pupil_shape_accomodation.tested"
                                                       style="margin-bottom: 5px;">
-                                                Shape and Accomodation
+                                                Shape and Accommodation
                                             </Checkbox>
                                             <Row gutter=12>
                                                 <Col span="12">
@@ -691,7 +697,7 @@
                         <Form>
                             <Row gutter=12>
                                 <Col span="16">
-                                    <Divider orientation="center" class="form-group-divider">Physician's Assessment</Divider>
+                                    <Divider orientation="center" class="form-group-divider" size="small">Physician's Assessment</Divider>
                                     <FormItem label="" style="margin-top: 10px;"
                                                @on-form-blur="textChanged($event, 'assessment')">
                                         <Input type="textarea"
@@ -703,7 +709,7 @@
                                 </Col>
 
                                 <Col span="8" style="height: 50vh;">
-                                    <Divider orientation="center" class="form-group-divider">Diagnostics Documents</Divider>
+                                    <Divider orientation="center" class="form-group-divider" size="small">Diagnostics Documents</Divider>
                                         <div 
                                             class="diagnostic-container"
                                             v-for="item in diagnostic_data" 
@@ -727,7 +733,7 @@
                         <Form>
                             <Row gutter="12">
                                 <Col span="16">
-                                    <Divider orientation="center" class="form-group-divider">Physician's Plan</Divider>
+                                    <Divider orientation="center" class="form-group-divider" size="small">Physician's Plan</Divider>
                                     <FormItem label="" style="margin-top: 10px;"
                                                @on-form-blur="textChanged($event, 'plan')">
                                         <Input type="textarea"
@@ -739,22 +745,23 @@
                                 </Col>
 
                                 <Col span="8" style="height: 50vh;">
-                                    <Divider orientation="center" class="form-group-divider">Medication/ Prescriptions</Divider>
+                                    <Divider orientation="center" class="form-group-divider" size="small">Medication/ Prescriptions</Divider>
                                         <FormItem label="" style="margin-top: 10px;"
                                                @on-form-blur="textChanged($event, 'prescription')">
                                             <Input type="textarea"
                                                 placeholder="Drugs prescribed for patient"
-                                                rows="5">
+                                                rows="7">
                                             </Input>
                                         </FormItem>
 
-                                    <Divider orientation="center" class="form-group-divider">Review</Divider>
-                                        <FormItem style="margin-top: 10px;"
+                                    <Divider orientation="center" class="form-group-divider" size="small">Review</Divider>
+                                        <FormItem style="margin-top: 20px;"
                                                @on-form-blur="textChanged($event, 'review_date')">
                                             <DatePicker 
                                                 type="date" 
                                                 :options="options3" 
                                                 style="width:100%"
+                                                placement="top-start"
                                                 placeholder="Schedule a date for review"> 
                                             </DatePicker>
                                         </FormItem>
@@ -897,25 +904,6 @@
                     plan: '',
                     prescription: '',
                     review_date: '',
-
-                },
-
-                formValidationRules: {
-                    patient: [
-                        {required: true, message: "Select an Insurance Provider", trigger: 'blur'}
-                    ],
-
-                    blood_pressure: [
-                        {required: true, message: "A policy number is required", trigger: 'blur'},
-                    ],
-
-                    heart_rate: [
-                        {required: true, message: "Provide maximum cover", trigger: 'blur'}
-                    ],
-
-                    body_temperature: [
-                        {required: true, message: "Provide maximum cover", trigger: 'blur'}
-                    ],
 
                 },
 
@@ -1081,6 +1069,10 @@
     .active {
         border-color: #4f8961;
         color: #4f8961;
+    }
+
+    .patient-age-insurance {
+        margin-top: 5px;
     }
 
 </style>

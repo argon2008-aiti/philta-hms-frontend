@@ -111,6 +111,17 @@ export default {
                 resolve(patient);
             }
         }),
+
+        read_diagnostics: (context, id) => new Promise(async function(resolve, reject) {
+            // stuff to retrieve a particular todo data from the backend : CRUD READ ACTION
+            try {
+                let { data } = await $axios.get("/document", { params: { id: id } });
+                resolve(data);
+            } catch (error) {
+                reject(error);
+            }
+        }),
+
         update: (context, payload) => new Promise(async function(resolve, reject) {
             // stuff to update a particular todo data to the backend : CRUD UPDATE ACTION
             context.commit('setAsyncSavingPatient', true);
