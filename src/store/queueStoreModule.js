@@ -46,6 +46,10 @@ export default {
             state.queue.splice(index, 1);
         },
 
+        socket_addPatientToQueue: (state, patient) => {},
+
+        socket_deletePatientByID: (state, id) => {},
+
         movePatientUp: (state, id) => {
             let index = state.queue.findIndex(pat => pat._id === id);
             let patient = state.queue.splice(index, 1);
@@ -115,7 +119,6 @@ export default {
         }),
 
         delete: (context, id) => new Promise(async function(resolve, reject) {
-            console.log(id);
             try {
                 let { data } = await $axios.delete(context.state.api_endpoint, { params: { id: id } });
                 resolve(data)
@@ -123,6 +126,16 @@ export default {
             } catch (error) {
                 reject(error);
             }
-        })
+        }),
+
+        SOCKET_AddPatientToQueue: (context, patient) => {
+            context.commit('addPatientToQueue', patient);
+            context.commit('socket_addPatientToQueue', patient);
+        },
+
+        SOCKET_RemovePatientFromQueue: (context, id) => {
+            context.commit('deletePatientByID', id);
+            context.commit('socket_deletePatientByID', id);
+        }
     }
 }

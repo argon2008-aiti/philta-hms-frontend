@@ -112,6 +112,7 @@
                             let patient = this.$store.getters['patient/getPatientByID'](response.patient);
                             response.patient = patient;
                             this.$store.commit('queue/addPatientToQueue', response);
+                            this.$socket.emit("Patient Added to Queue", response);
                             this.$root.$emit("vitalsModalOk", this.vitalsForm);
                             this.modal_active = false;
                         }

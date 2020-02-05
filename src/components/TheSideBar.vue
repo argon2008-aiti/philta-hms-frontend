@@ -65,15 +65,28 @@
 </template>
 
 <script>
+import {Howl, Howler} from 'howler';
 export default {
     data() {
         return {
             active_item: " ",
+            queue_add: null,
+            queue_remove: null,
         }
     },
 
     created: function() {
         this.active_item = this.$router.currentRoute.meta.name;
+        this.queue_add = new Howl({
+            src: ['./inflicted.mp3']
+        });
+
+        this.queue_remove = new Howl({
+            src: ['./sharp.mp3']
+        });
+
+        Howler.volume(0.5);
+
     },
     
     computed: {
@@ -88,6 +101,25 @@ export default {
 
     mounted() {
         //console.log(this.$store.getters['user/currentUser']);
+        this.$store.subscribe((mutation, state) => {
+            if(mutation.type==="queue/socket_addPatientToQueue") {
+                this.$Notice.open({
+                    title: 'Patient Added to Queue',
+                    desc: mutation.payload.patient.full_name,
+                    duration: 4
+                });
+                this.queue_add.play();
+            }
+
+            else if(mutation.type==="queue/socket_deletePatientByID") {
+                this.$Notice.error({
+                    title: 'Patient Removed from Queue',
+                    duration: 4
+                });
+
+                this.queue_remove.play();
+            }
+        });
     },
 
     methods: {

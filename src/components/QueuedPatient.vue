@@ -118,7 +118,12 @@ export default {
 
                 case 'remove':
                     //delete from queue and from database
-                    this.$store.dispatch('queue/delete', this.patient_data._id);
+                    this.$store.dispatch('queue/delete', this.patient_data._id)
+                        .then((data) => {
+                           this.$socket.emit('Remove Patient From Queue', data._id) 
+                        }).catch((err) => {
+                           console.log(err);
+                        });
                     break;
             
                 default:
