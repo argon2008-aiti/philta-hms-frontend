@@ -2,20 +2,27 @@
           <Modal v-model="modal_active"
                 :title="title"
                 :z-index=5000
-                :on-visible-change="visibleChange"
                 class-name="vertical-center-modal">
                 <Form ref="providerForm" label-position="top" :rules="formValidationRules" :model="PolicyForm">
                     <FormItem label="Insurance Provider:" prop="provider">
                         <Select v-model="PolicyForm.provider" 
-                            placeholder="Choose an insurance company">
+                            placeholder="Choose an insurance company"
+                            @on-change="providerChanged">
                             <Option v-for="provider in providers" :key="provider._id" :value="provider._id">
                             {{provider.company_name}}
                             </Option>
                         </Select>
                     </FormItem>
                     <Row :gutter=12>
-                        <Col span="12">
+                        <Col span="12" v-if="modal_type">
                             <FormItem label="Policy Number:" prop="policy_number">
+                                <Input v-model="PolicyForm.policy_number"
+                                    placeholder="Provide policy number">
+                                </Input>
+                            </FormItem>
+                        </Col>
+                        <Col span="12" v-if="!modal_type">
+                            <FormItem label="Staff ID:" prop="policy_number">
                                 <Input v-model="PolicyForm.policy_number"
                                     placeholder="Provide policy number">
                                 </Input>
@@ -29,7 +36,7 @@
                             </FormItem>
                         </Col>
                     </Row>
-                    <Row :gutter=12>
+                    <Row :gutter=12 v-if="modal_type">
                         <Col span="12">
                             <FormItem label="Policy Activation Date:" prop="policy_start">
                                 <DatePicker type="date" 
@@ -73,6 +80,7 @@
         data() {
             return {
                 modal_active: false,
+                modal_type: false,
                 providers: '',
                 PolicyForm: {
                         provider: '',
@@ -123,9 +131,11 @@
                 });
             },
 
-            visibleChange(state) {
-                console.log(state);
+            providerChanged(provider) {
+                let provider_data = this.providers.find(p=>p._id==provider);
+                this.modal_type = provider_data.insurer_type=="Organization"? true : false;
             }
+
         },
 
         mounted() {

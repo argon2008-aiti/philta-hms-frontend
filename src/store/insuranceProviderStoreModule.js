@@ -20,6 +20,10 @@ export default {
         all: state => {
             return state.providers;
         },
+
+        allClaims: state => {
+            return state.claims;
+        },
         // getters and computed props on the todos data
         /*
         patientCount: state => {
@@ -52,6 +56,10 @@ export default {
         // stuff to set todos data locally
         setProviderList: (state, providers) => {
             Vue.set(state, 'providers', providers);
+        },
+
+        setClaimList: (state, claims) => {
+            Vue.set(state, 'claims', claims);
         },
 
         addProviderToList: (state, provider) => {
@@ -87,6 +95,16 @@ export default {
             try {
                 let { data } = await $axios.get(context.state.api_endpoint);
                 context.commit('setProviderList', data);
+                resolve(data);
+            } catch (error) {
+                reject(error);
+            }
+        }),
+
+        fetchClaims: (context) => new Promise(async function(resolve, reject) {
+            try {
+                let { data } = await $axios.get('claim');
+                context.commit('setClaimList', data);
                 resolve(data);
             } catch (error) {
                 reject(error);

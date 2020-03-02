@@ -6,6 +6,7 @@ import insuranceProviderStoreModule from "./insuranceProviderStoreModule";
 import userStoreModule from "./userStoreModule";
 import queueStoreModule from "./queueStoreModule";
 import medicalReportStoreModule from './medicalReportStoreModule';
+import billStoreModule from './billStoreModule';
 
 Vue.use(Vuex)
 
@@ -16,5 +17,6 @@ export default new Vuex.Store({
         user: userStoreModule,
         queue: queueStoreModule,
         report: medicalReportStoreModule,
+        bill: billStoreModule,
     }
 })

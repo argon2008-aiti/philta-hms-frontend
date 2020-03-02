@@ -12,7 +12,7 @@
             <AutoComplete 
                   size="large" 
                   :v-model="current_search"
-                  placeholder="Search Patients [Name or ID]" 
+                  placeholder="Search Patients" 
                   :disabled="patientCount==0"
                   @on-search="searchPatient"
                   @on-select="patientSelected"
@@ -60,7 +60,7 @@
           </Col>
         </Row>
       </div>
-        <Card dis-hover style="margin-top: 50px; min-height: 80vh;">
+        <Card dis-hover class="table-card" style="margin-top: 50px; min-height: 80vh;">
       <div class="page-contents">
           <Modal v-model="add_user_modal_active"
                 class="add-patient-modal"
@@ -99,8 +99,8 @@
           </div>
           <Table v-else :columns="column_names" 
                  :data="patientList"
-                 stripe
                  :loading="table_loading"
+                 stripe
                  @on-row-click="row_clicked"
                  size="large">
                 <template  slot-scope="{ row, index }" slot="full_name">
@@ -116,7 +116,7 @@
                               placement='left-start' 
                               :transfer="true"
                               @on-click="handleContextMenuClick($event, index)">
-                          <Icon class="patient-table-more-icon" type="md-more" size='20'/>
+                          <Icon class="table-more-icon" type="md-more" size='20'/>
                       <DropdownMenu slot="list">
                           <DropdownItem name="details">
                             <span>
@@ -201,7 +201,6 @@
 import AddPatientForm from '@/components/AddPatientForm';
 import NoDataView from '@/components/NoDataView';
 import randomcolor from 'randomcolor';
-import sortByKey from "../utils/sorter";
 import { setTimeout } from 'timers';
 
 export default {
@@ -242,7 +241,7 @@ export default {
           },
 
           {
-            title: 'NAME',
+            title: 'Name',
             slot: 'full_name',
             minWidth: 120,
             ellipsis: true,
@@ -250,19 +249,19 @@ export default {
           },
 
           {
-            title: 'PATIENT ID',
+            title: 'Patient Id',
             key: 'patient_id',
             ellipsis: true
           },
 
           {
-            title: 'PHONE',
+            title: 'Phone',
             key: 'phone_number',
             ellipsis: true
           },
 
           {
-            title: 'EMAIL',
+            title: 'Email',
             key: 'email',
             ellipsis: true
           },
@@ -501,7 +500,7 @@ export default {
     .page-contents {
       background: white;
       margin-top: 1px;
-      padding: 10px;
+      padding: 0px;
     }
 
     .ivu-table-wrapper {
@@ -521,14 +520,6 @@ export default {
         -webkit-box-shadow: 0px 4px 4px -4px #dcdedc;
            -mox-box-shadow: 0px 4px 4px -4px #dcdedc;
         box-shadow: 0px 4px 4px -3px #dcdedc;
-    }
-
-    .patient-table-more-icon {
-      color: #9e9e9e;
-    }
-
-    .patient-table-more-icon:hover {
-      color: #333;
     }
 
     #patient-info-header > *{
@@ -572,6 +563,10 @@ export default {
       opacity: 0.8;
     }
 
+    .ivu-card-body {
+      padding: 8px;
+    }
+
 
 </style>
 
@@ -592,13 +587,11 @@ export default {
   .ivu-table {
     font-size: 14px;
        th {
-         background-color: #fff;
-         border-bottom: 1px solid #e8eaec;
-         margin-bottom: 10px;
+         border-bottom: 2px solid #e8eaec;
        }
 
        td {
-         border-bottom: none;
+         border-bottom: 1px solid #f3f3f3;
        }
 
        &:after {
@@ -614,7 +607,6 @@ export default {
        }
 
       .ivu-table-body {
-        margin-top: 10px;
       }
 
   }
@@ -642,5 +634,17 @@ export default {
 .patient-count-badge {
   top: -2px;
   font-family: inherit;
+}
+
+.table-more-icon {
+  color: #9e9e9e;
+}
+
+.table-more-icon:hover {
+  color: #333;
+}
+
+.table-card .ivu-card-body {
+  padding: 0px;
 }
 </style>

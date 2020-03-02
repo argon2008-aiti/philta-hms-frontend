@@ -64,24 +64,24 @@
             </div>
         </Card>
     </div>
-    <div style="margin-top: 30px">
-    <p class="section-header-text">PREVIOUS VISITS</p>
+    <!-- <div style="margin-top: 30px">
+        <p class="section-header-text">PREVIOUS VISITS</p>
         <Card dis-hover class="section-card">
             <div class="page-contents">
-                <div v-if="currentPatient.insurance_policy.scheme=='None'" class="insurance-policy-container">
+                <div v-if="insurancePolicy==null" class="insurance-policy-container">
                     <img src="../assets/no_insurance.png" alt="no insurance" srcset="">
                     <p class="no-insurance-text">Patient Has No Insurance Policy!</p>
                     <Button type="primary">Add Insurance Policy</Button>
                 </div>
             </div>
         </Card>
-    </div>
+    </div> -->
 
     <div style="margin-top: 30px">
-    <p class="section-header-text">INSURANCE POLICY</p>
+        <p class="section-header-text">INSURANCE POLICY</p>
         <Card dis-hover class="section-card">
             <div class="page-contents">
-                <div v-if="insurancePolicy.policy_number==null" class="insurance-policy-container">
+                <div v-if="insurancePolicy.provider==null" class="insurance-policy-container">
                     <img src="../assets/no_insurance.png" alt="no insurance" srcset="">
                     <p class="no-insurance-text">Patient Has No Insurance Policy!</p>
                     <Button type="primary" @click="addInsurancePolicy">Add Insurance Policy</Button>
@@ -94,7 +94,8 @@
                                 alt="insurance logo" srcset="" 
                                 class="provider-logo">
                         </Col>
-                        <Col span="13" class="patient-insurance-container">
+                        <Col span="8" class="patient-insurance-container"
+                             style="padding-bottom: 70px;">
                             <div><Icon type="ios-podium-outline" size="24"></Icon>
                                 <span class="patient-info-inline">{{insurancePolicy.provider.company_name}}</span>
                             </div>
@@ -109,14 +110,18 @@
                                 <span class="badge-span expired" v-if="expired(insurancePolicy.policy_end)">expired</span>
                                 <span class="badge-span" v-else>{{insurancePolicy.policy_end | daysUntilExpire}} days left </span>
                             </div>
-                        </Col>
-                        <Col span="3">
                             <Button 
                                 type="outline" 
                                 icon="md-create" 
-                                style="margin-top: 15px;"
+                                style="position: absolute; bottom: 0px;"
                                 @click="editInsurancePolicy">
-                                Edit Info</Button>
+                                Edit Info
+                            </Button>
+                        </Col>
+                        <Col span="1">
+                            <div class="vertical-divider"></div>
+                        </Col>
+                        <Col span="7">
                         </Col>
                     </Row>
 
@@ -379,10 +384,19 @@ import { $api_base_url } from "../utils/http";
     }
 
     .provider-logo {
-        max-width: 90%;
+        max-width: 80%;
         height: auto;
         margin-top: 10px;
 
+    }
+
+    .vertical-divider {
+        position: absolute;
+        height: 270px;
+        top: 10%;
+        bottom: 10%;
+        width: 1px;
+        background: #ccc;
     }
 </style>
 

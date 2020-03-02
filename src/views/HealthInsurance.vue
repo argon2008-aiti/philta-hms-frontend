@@ -22,21 +22,36 @@
   <div v-else>
     <div style="margin-top: 60px">
     <p class="section-header-text">PROVIDERS</p>
-        <Card dis-hover class="section-card">
+        <Card dis-hover class="section-card table-card">
             <div class="page-contents">
-                  <div class="flex-container">
-                    <div v-for="provider in providerList" class="provider-enclosure" :key="provider.id">
-                      <img :src="createImageUrl(provider.logo_url)" alt="" srcset=""
-                            width="200px" class="insurance-logo">
-                    </div>
-                  </div>
+                 <Table
+                      :data="providerList"
+                      stripe
+                      :columns="columns">
+
+                 </Table>
             </div>
         </Card>
     </div>
     <div style="margin-top: 30px">
     <p class="section-header-text">CLAIMS</p>
-        <Card dis-hover class="section-card">
+        <Card dis-hover class="section-card table-card">
             <div class="page-contents">
+                 <Table
+                      :data="claimList"
+                      stripe
+                      v-if="claimList.length!=0"
+                      :columns="claims_columns">
+                      <template slot-scope="{row, index}" slot="status">
+                        <div class="insurance_status" :class="{ is_pending: row.status=='PENDING' }">
+                          {{row.status}}
+                        </div>
+                      </template>
+                 </Table>
+                 <div v-else style="padding: 50px; text-align: center;">
+                   <NoDataView message="No claims found!">
+                   </NoDataView>
+                 </div>
             </div>
         </Card>
     </div>
@@ -46,13 +61,79 @@
 
 <script>
 import NewInsuranceProviderModal from '@/components/AddInsuranceProvider.vue'
+import NoDataView from '@/components/NoDataView';
 import Vue from 'vue'
 import store from '../store/index'
+import moment from 'moment'
 export default {
+  components: {
+    NoDataView
+  },
 
   data() {
     return {
        isColored: false,
+       columns: [
+         {
+           title: 'Company',
+           key: 'company_name'
+         },
+         {
+           title: 'Phone',
+           key: 'phone_number',
+           align: 'center'
+         },
+         {
+           title: 'Email',
+           key: 'email'
+         },
+         {
+           title: 'Insurer Type',
+           key: 'insurer_type'
+         },
+       ],
+
+       claims_columns: [
+         {
+           type: 'index',
+           width: 60,
+           align: 'center'
+         },
+         {
+           title: 'Date',
+           key: 'bill_date',
+           align: 'center',
+           width: 150
+         },
+         {
+           title: 'Bill Number',
+           key: 'bill_number',
+           align: 'center',
+           width: 200
+         },
+         {
+           title: 'Patient',
+           key: 'patient',
+         },
+         {
+           title: 'Insurer',
+           key: 'insurer'
+         },
+         {
+           title: 'Amount',
+           key: 'total',
+           align: 'right',
+           width: 100,
+          className: "total-column"
+         },
+
+         {
+           title: 'Status',
+           slot: 'status',
+           width: 150,
+           align: 'center',
+         },
+       ]
     }
   },
   
@@ -60,14 +141,42 @@ export default {
     providerList: function() {
       return this.$store.getters['provider/all'];
     },
+
     providerCount: function() {
       return this.$store.getters['provider/providerCount'];
+    },
+
+    claimList: function() {
+       let real_data = [];
+       this.rawData.map((data)=> {
+          let claim_object = {};
+          claim_object.bill_date   = moment(data.created_at).format('DD-MM-YYYY');
+          claim_object.patient     = data.patient.full_name;
+          claim_object.status = data.paid ? "PAID" : "PENDING";
+          claim_object.total = data.bill_array.reduce((total, bill)=>{
+                         total = total + bill.sub_total
+                         return total;
+                      }, 0).toFixed(2);
+          claim_object.insurer = data.provider.company_name;
+          claim_object.bill_number = data.bill.bill_number;
+          real_data.push(claim_object);
+       })
+       return real_data;
+    },
+
+    rawData: function() {
+      return this.$store.getters['provider/allClaims'];
     }
+
   },
 
   methods: {
     fetchProviders() {
        return this.$store.dispatch('provider/fetch');
+    },
+    
+    fetchClaims() {
+       return this.$store.dispatch('provider/fetchClaims');
     },
 
     addInsuranceProvider() {
@@ -116,6 +225,8 @@ export default {
               })
           }
        });
+
+    this.fetchClaims();
     this.$root.$on("newProviderSaveSuccess", (data) => {
       this.$Message.success({
         top: 50,
@@ -176,4 +287,21 @@ export default {
     .insurance-logo:hover {
       filter: none;
     }
+
+    .page-contents {
+      padding: 0px;
+    }
+    
+    .insurance_status {
+      border: 1px #ccc solid;
+      color: inherit;
+    }
+  
+</style>
+
+<style>
+    .ivu-table th {
+      background-color: white;
+    }
+
 </style>

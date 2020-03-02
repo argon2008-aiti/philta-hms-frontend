@@ -24,20 +24,20 @@
                         </Input>
                     </FormItem>
                     <Row :gutter=12>
-                        <Col span="16">
+                        <Col span="12">
                         <FormItem label="Insurer Type:" prop="insurer_type">
                             <RadioGroup v-model="ProviderForm.insurer_type" 
                                         type="button">
-                                <Radio label="Organization" >
-                                    <span>Corporate Provider</span>
+                                <Radio label="Employer Sponsored" >
+                                    <span>Employer</span>
                                 </Radio>
-                                <Radio label="ThirdParty">
-                                    <span>Third Party Provider</span>
+                                <Radio label="Organization">
+                                    <span>Organization</span>
                                 </Radio>
                             </RadioGroup>
                         </FormItem>
                         </Col>
-                        <Col span="8">
+                        <Col span="12">
                             <FormItem label="Provider Logo:" class="float-right" ref="form_item">
                                 <input type="file" ref="file_input" accept="image/*"/>
                                 <!--<div class="avatar-container">

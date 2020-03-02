@@ -7,6 +7,7 @@ import HealthInsurance from './views/HealthInsurance'
 import Consultations from './views/Consultations'
 import MedicalReportDetails from './views/MedicalReportDetails'
 import Bills from './views/Bills'
+import BillDetails from './views/BillDetails'
 import LogIn from './views/LogIn'
 
 Vue.use(Router)
@@ -96,11 +97,23 @@ let router = new Router({
             path: '/bills',
             name: 'billings',
             meta: {
-                display_name: 'Billings',
+                display_name: 'Billing',
                 name: 'billings',
                 requiresAuth: true
             },
             component: Bills
+        },
+
+        {
+            path: '/bills/details',
+            name: 'billings_details',
+            meta: {
+                display_name: 'Billing Details',
+                name: 'billings',
+                requiresAuth: true
+            },
+            component: BillDetails,
+            props: true
         },
 
         {

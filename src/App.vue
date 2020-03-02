@@ -24,4 +24,8 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+.ivu-table th {
+  background-color: white;
+}
 </style>

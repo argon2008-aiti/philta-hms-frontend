@@ -10,13 +10,27 @@
                         <Col span="10">
                             <div class="patient-name-title">{{patient_data.patient.full_name}}</div>
                         </Col>
-                        <Col span="4">
+                        <Col span="10">
                             <div class="patient-age-insurance">
-                                <Icon type="ios-calendar-outline"></Icon>
-                                {{patient_data.patient.date_of_birth | getAge}}
+                                <span>
+                                    <Icon type="ios-body-outline" size="18"
+                                          style="margin-right: 2px;"></Icon>
+                                    {{patient_data.patient.date_of_birth | getAge}}
+                                </span>
+                                <span style="margin-left: 20px;">
+                                    <Icon type="ios-construct-outline" size="18"
+                                          style="margin-right: 2px;"></Icon>
+                                    {{patient_data.patient.occupation}}
+                                </span>
+                                <span style="margin-left: 20px;">
+                                    <Icon type="ios-medkit-outline" size="18"
+                                          color="insuranceColor"
+                                          style="margin-right: 2px;"></Icon>
+                                    {{insuranceStatus}}
+                                </span>
                              </div>
                         </Col>
-                        <Col span="10">
+                        <Col span="4">
                             <div class="vitals-container">
                                 <span class="vitals-wrapper" style="margin-right: 10px;">
                                     <Icon type="ios-heart-outline" size="16" color="#ff4c4c"></Icon>
@@ -800,7 +814,7 @@
                            <Col span="5">
                                 <Upload 
                                     :before-upload="handleDiagnosticUpload">
-                                    <Button>Add File</Button>
+                                    <Button long>Add File</Button>
                                 </Upload>
                             </Col>
                         </Row>
@@ -824,7 +838,8 @@
 </template>
 
 <script>
-    import DiagnosticFileItem from '@/components/DiagnosticFileItem.vue'
+    import DiagnosticFileItem from '@/components/DiagnosticFileItem.vue';
+    import moment from 'moment';
     export default {
         name: 'MedicalReportModal',
         props: ['patient_data'],
@@ -917,6 +932,20 @@
             }
         },
 
+        computed: {
+            insuranceStatus() {
+               let insurance_status = !this.patient_data.patient.insurance_policy.provider ? "None" : 
+                                  this.expired(this.patient_data.patient.insurance_policy.policy_end) ? "Expired" : "Active";
+               return insurance_status;
+            },
+
+            insuranceColor() {
+                let color = "#333";
+                color = this.insuranceStatus=="Expired" ? "#ff4c4c" : "#3bbf49";
+                return color;
+            }
+        },
+
         methods: {
             doNothingMethod: () => {
                 return;
@@ -993,6 +1022,12 @@
                                console.log(err);
                                this.loading = false;
                            });
+            },
+
+            expired: function(date) {
+                let today = moment();
+                let expire_date = moment(date);
+                return expire_date.diff(today, 'days') < 0;
             }
         },
 
